@@ -462,7 +462,7 @@ def send_low_stock_alert():
         y -= 30
 
         c.setFont("Helvetica", 10)
-        c.drawString(50, y, f"Restaurant: TasteCraftRestaurant")
+        c.drawString(50, y, f"Restaurant: FlavorFusion Restaurant")
         y -= 15
         c.drawString(50, y, f"Generated on: {timestamp}")
         y -= 30
@@ -503,7 +503,7 @@ def send_low_stock_alert():
         email_body = f"""
 Dear Management Team,
 
-This is an automated stock monitoring alert from TasteCraftRestaurant.
+This is an automated stock monitoring alert from FlavorFusion Restaurant.
 
 One or more inventory items have fallen below the minimum stock threshold (less than 5 units).
 
@@ -519,7 +519,7 @@ Do not reply to this email.
 
 Regards,
 Inventory Management System
-TasteCraftRestaurant
+FlavorFusion Restaurant
 """
         # ==============================================
 
