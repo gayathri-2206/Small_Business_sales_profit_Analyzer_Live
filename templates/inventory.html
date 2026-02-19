@@ -1,0 +1,644 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* Modern Restaurant Theme - Matching Owner Dashboard */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+    body {
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.75)),
+            url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        font-family: 'Poppins', sans-serif;
+        color: #ffffff;
+        padding: 20px;
+        position: relative;
+    }
+
+    /* Animated food particles */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(255, 99, 71, 0.15) 0%, transparent 50%);
+        pointer-events: none;
+        animation: pulseGlow 4s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.8; }
+    }
+
+    .inventory-container {
+        background: rgba(20, 20, 30, 0.85);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        margin-top: 20px;
+        animation: fadeIn 0.8s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Shine effect on container */
+    .inventory-container::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to bottom right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.05) 50%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        transform: rotate(45deg);
+        animation: shine 3s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    @keyframes shine {
+        0% { transform: translateX(-100%) rotate(45deg); }
+        20%, 100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .inventory-header {
+        text-align: center;
+        margin-bottom: 30px;
+        animation: slideDown 1s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .inventory-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .inventory-title::after {
+        content: '📦';
+        font-size: 2.5rem;
+        margin-left: 15px;
+        animation: bounce 2s ease-in-out infinite;
+        -webkit-text-fill-color: initial;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .inventory-subtitle {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        color: #FFFFFF;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(5px);
+        display: inline-block;
+        padding: 10px 30px;
+        border-radius: 50px;
+        border: 1px solid rgba(255, 215, 0, 0.5);
+        animation: fadeInUp 1s ease-out 0.3s both;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .inventory-table {
+        background: rgba(30, 30, 40, 0.7);
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 215, 0, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation: tableFade 0.8s ease-out 0.4s both;
+    }
+
+    @keyframes tableFade {
+        from {
+            opacity: 0;
+            transform: scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .inventory-table thead th {
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+        color: #FFD700;
+        font-weight: 600;
+        border: none;
+        border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        padding: 18px 15px;
+        text-align: center;
+        font-size: 1.2rem;
+        font-family: 'Playfair Display', serif;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .inventory-table tbody td {
+        background: rgba(40, 40, 50, 0.6);
+        color: #f8f9fa;
+        border: none;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        padding: 18px 15px;
+        vertical-align: middle;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .inventory-table tbody tr {
+        transition: all 0.3s ease;
+        animation: rowFade 0.5s ease-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes rowFade {
+        to {
+            opacity: 1;
+        }
+    }
+
+    .inventory-table tbody tr:hover {
+        background: rgba(255, 215, 0, 0.1);
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .item-name {
+        color: #FFD700;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-align: left;
+        padding-left: 20px;
+        font-family: 'Playfair Display', serif;
+        letter-spacing: 0.5px;
+        position: relative;
+    }
+
+    .item-name::before {
+        content: '🍴';
+        position: absolute;
+        left: -5px;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .inventory-table tbody tr:hover .item-name::before {
+        opacity: 1;
+        left: -15px;
+    }
+
+    .form-control-sm {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        color: #fff;
+        border-radius: 10px;
+        padding: 10px 15px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-align: center;
+        max-width: 150px;
+        margin: 0 auto;
+        font-weight: 500;
+    }
+
+    .form-control-sm:hover {
+        transform: scale(1.05);
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 215, 0, 0.6);
+    }
+
+    .form-control-sm:focus {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-color: #FFD700;
+        color: #fff;
+        box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
+        transform: scale(1.02);
+        outline: none;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        border: none;
+        color: #1a1a1a;
+        font-weight: 600;
+        padding: 10px 25px;
+        border-radius: 10px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        min-width: 100px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-success::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #FFA500, #FFD700);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+    }
+
+    .btn-success:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-success:active {
+        transform: translateY(-1px);
+    }
+
+    /* Low stock indicator */
+    .low-stock {
+        background: rgba(255, 107, 107, 0.15) !important;
+        border-left: 4px solid #FF6B6B;
+        position: relative;
+    }
+
+    .low-stock::after {
+        content: '⚠️ Low Stock';
+        position: absolute;
+        right: 10px;
+        color: #FF6B6B;
+        font-size: 0.8rem;
+        font-weight: 600;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; transform: scale(1.05); }
+    }
+
+    /* Floating food icons */
+    .food-icon {
+        position: absolute;
+        font-size: 2rem;
+        opacity: 0.2;
+        animation: float 6s ease-in-out infinite;
+        pointer-events: none;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        z-index: 0;
+    }
+
+    .icon-1 { top: 10%; left: 5%; animation-delay: 0s; }
+    .icon-2 { bottom: 15%; right: 5%; animation-delay: 1s; }
+    .icon-3 { top: 30%; right: 10%; animation-delay: 2s; }
+    .icon-4 { bottom: 40%; left: 8%; animation-delay: 3s; }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    /* Decorative golden line */
+    .golden-line {
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #FFD700, transparent);
+        margin: 30px 0;
+        animation: expandLine 1s ease-out;
+    }
+
+    @keyframes expandLine {
+        from { width: 0; opacity: 0; }
+        to { width: 100%; opacity: 1; }
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .inventory-container {
+            padding: 20px;
+        }
+        
+        .inventory-title {
+            font-size: 2rem;
+        }
+        
+        .inventory-title::after {
+            font-size: 1.8rem;
+        }
+        
+        .inventory-table thead th,
+        .inventory-table tbody td {
+            padding: 12px 8px;
+            font-size: 0.9rem;
+        }
+        
+        .form-control-sm {
+            max-width: 100px;
+            padding: 6px 10px;
+        }
+        
+        .btn-success {
+            padding: 6px 15px;
+            min-width: 70px;
+            font-size: 0.8rem;
+        }
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(30, 30, 40, 0.8);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #FFA500, #FFD700);
+    }
+
+    /* Table footer stats */
+    .table-footer-stats {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(20, 20, 30, 0.6);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 215, 0, 0.2);
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .stat-label {
+        color: #FFD700;
+        font-weight: 600;
+    }
+
+    .stat-value {
+        background: rgba(255, 215, 0, 0.2);
+        padding: 5px 15px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+</style>
+
+<!-- Floating Food Icons -->
+<div class="food-icon icon-1">🥩</div>
+<div class="food-icon icon-2">🥗</div>
+<div class="food-icon icon-3">🍷</div>
+<div class="food-icon icon-4">🍳</div>
+
+<div class="inventory-container">
+    <div class="inventory-header">
+        <h1 class="inventory-title">Inventory Management</h1>
+        <div class="inventory-subtitle">Manage your restaurant's stock and pricing efficiently</div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="inventory-table table align-middle">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Stock</th>
+                    <th>Price (₹)</th>
+                    <th>Update</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in items %}
+                <tr>
+                    <td class="item-name">{{ i.item_name }}</td>
+                    <td>
+                        <input type="number" name="stock" class="form-control form-control-sm"
+                               form="form-{{ loop.index }}" value="{{ i.stock }}" min="0" required>
+                    </td>
+                    <td>
+                        <input type="number" name="price" class="form-control form-control-sm"
+                               form="form-{{ loop.index }}" value="{{ i.price }}" min="0" step="0.01" required>
+                    </td>
+                    <td>
+                        <form id="form-{{ loop.index }}"
+                              method="POST"
+                              action="/update_inventory/{{ i.item_name }}">
+                            <button class="btn btn-success btn-sm">Save</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Table Footer Stats -->
+    <div class="table-footer-stats">
+        <div class="stat-item">
+            <span class="stat-label">Total Items:</span>
+            <span class="stat-value">{{ items|length }}</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Low Stock Items:</span>
+            <span class="stat-value" id="lowStockCount">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Total Value:</span>
+            <span class="stat-value" id="totalValue">₹0</span>
+        </div>
+    </div>
+</div>
+
+<!-- Decorative Golden Line -->
+<div class="golden-line"></div>
+
+<script>
+    // All original functionality preserved exactly as before
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate table rows on load
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+        
+        // Add hover effects to form controls
+        const formControls = document.querySelectorAll('.form-control-sm');
+        formControls.forEach(control => {
+            control.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            
+            control.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+            
+            control.addEventListener('focus', function() {
+                this.style.background = 'rgba(255, 255, 255, 0.2)';
+                this.style.borderColor = '#ff6b6b';
+            });
+            
+            control.addEventListener('blur', function() {
+                this.style.background = 'rgba(255, 255, 255, 0.1)';
+                this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            });
+        });
+        
+        // Form submission feedback - EXACTLY as before
+        const forms = document.querySelectorAll('form[id^="form-"]');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('.btn-success');
+                const originalText = submitBtn.innerHTML;
+                const originalBg = submitBtn.style.background;
+                
+                submitBtn.innerHTML = 'Saving...';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.8';
+                
+                // For demo purposes - in real implementation, this would be handled by backend
+                setTimeout(() => {
+                    submitBtn.innerHTML = 'Saved!';
+                    submitBtn.style.background = 'linear-gradient(to right, #ff6b6b, #ff8e8e)';
+                    
+                    // Reset button after 1.5 seconds
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        submitBtn.style.opacity = '1';
+                        submitBtn.style.background = originalBg || 'linear-gradient(to right, #4ecdc4, #6ae0d8)';
+                    }, 1500);
+                }, 800);
+            });
+        });
+        
+        // Highlight low stock items (stock < 10) - EXACT same functionality
+        const stockInputs = document.querySelectorAll('input[name="stock"]');
+        let lowStockCount = 0;
+        
+        stockInputs.forEach(input => {
+            const currentStock = parseInt(input.value);
+            if (currentStock < 10) {
+                const row = input.closest('tr');
+                row.style.backgroundColor = 'rgba(255, 107, 107, 0.1)';
+                row.style.borderLeft = '3px solid #ff6b6b';
+                lowStockCount++;
+            }
+        });
+        
+        // Update low stock count
+        const lowStockSpan = document.getElementById('lowStockCount');
+        if (lowStockSpan) {
+            lowStockSpan.textContent = lowStockCount;
+        }
+        
+        // Calculate total inventory value
+        const calculateTotalValue = () => {
+            let total = 0;
+            stockInputs.forEach(input => {
+                const stock = parseInt(input.value) || 0;
+                const row = input.closest('tr');
+                const priceInput = row.querySelector('input[name="price"]');
+                const price = parseFloat(priceInput.value) || 0;
+                total += stock * price;
+            });
+            
+            const totalSpan = document.getElementById('totalValue');
+            if (totalSpan) {
+                totalSpan.textContent = '₹' + total.toLocaleString('en-IN', {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2
+                });
+            }
+        };
+        
+        calculateTotalValue();
+        
+        // Update stats when inputs change
+        const inputs = document.querySelectorAll('.form-control-sm');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                calculateTotalValue();
+                
+                // Re-check low stock
+                let count = 0;
+                stockInputs.forEach(stockInput => {
+                    const val = parseInt(stockInput.value);
+                    if (val < 10) count++;
+                });
+                if (lowStockSpan) lowStockSpan.textContent = count;
+            });
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flavor Fusion's Restaurant - Edit Transaction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* ===== ACCOUNTANT THEME - EDIT TRANSACTION PAGE ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto+Slab:wght@400;600;700&display=swap');
+
+      body {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.75)),
+        url('https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=2070&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    color: #ffffff;
+    padding: 20px;
+    position: relative;
+}
+
+        /* Professional accounting pattern overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><rect width="60" height="60" fill="none" stroke="rgba(52, 152, 219, 0.03)" stroke-width="0.5"/><path d="M30 0 L30 60 M0 30 L60 30" stroke="rgba(52, 152, 219, 0.02)" stroke-width="0.5"/></svg>');
+            pointer-events: none;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 30px); }
+        }
+
+        /* Floating financial elements */
+        .floating-finance {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.12;
+            animation: floatFinance 12s ease-in-out infinite;
+            pointer-events: none;
+            text-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
+            z-index: 0;
+        }
+
+        .finance-1 { top: 10%; left: 5%; animation-delay: 0s; }
+        .finance-2 { bottom: 15%; right: 5%; animation-delay: 2s; }
+        .finance-3 { top: 70%; right: 10%; animation-delay: 4s; }
+        .finance-4 { bottom: 40%; left: 8%; animation-delay: 6s; }
+
+        @keyframes floatFinance {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .restaurant-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+            position: relative;
+            z-index: 1;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .restaurant-name {
+            color: #3498db;
+            font-family: 'Roboto Slab', serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(52, 152, 219, 0.4);
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .restaurant-name::after {
+            content: '📊';
+            font-size: 2.2rem;
+            margin-left: 15px;
+            animation: pulse 2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.9; }
+        }
+
+        .restaurant-tagline {
+            color: #ecf0f1;
+            font-style: italic;
+            font-size: 1rem;
+            opacity: 0.95;
+            background: rgba(52, 152, 219, 0.1);
+            padding: 8px 25px;
+            border-radius: 40px;
+            display: inline-block;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .content-container {
+            max-width: 800px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-title {
+            color: #3498db;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-family: 'Roboto Slab', serif;
+        }
+
+        .card {
+            background: rgba(25, 35, 50, 0.88);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            color: #f0f4f8;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Shine effect */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(52, 152, 219, 0.05) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(45deg);
+            animation: shine 10s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            20%, 100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .glow {
+            animation: professionalGlow 3s infinite alternate;
+        }
+
+        @keyframes professionalGlow {
+            from {
+                box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+                border-color: rgba(52, 152, 219, 0.3);
+            }
+            to {
+                box-shadow: 0 20px 50px rgba(52, 152, 219, 0.4);
+                border-color: rgba(52, 152, 219, 0.6);
+            }
+        }
+
+        .form-label {
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 25px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .form-control:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(52, 152, 219, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: #3498db;
+            color: #ffffff;
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+            outline: none;
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-style: italic;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border: none;
+            color: white;
+            font-weight: 700;
+            padding: 14px 28px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-success::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-success:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.5);
+            color: white;
+        }
+
+        .btn-outline-light {
+            background: transparent;
+            border: 2px solid rgba(52, 152, 219, 0.4);
+            color: #3498db;
+            font-weight: 600;
+            padding: 14px 28px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex: 1;
+            text-decoration: none;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-outline-light::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-outline-light:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-outline-light:hover {
+            background: rgba(52, 152, 219, 0.1);
+            border-color: #3498db;
+            color: #5dade2;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+            text-decoration: none;
+        }
+
+        .d-flex.gap-2 {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .mb-3 {
+            margin-bottom: 20px;
+        }
+
+        .mb-4 {
+            margin-bottom: 30px;
+        }
+
+        /* Progress indicator */
+        .finance-indicator {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #3498db, transparent);
+            margin: 20px 0 10px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .content-container {
+                padding: 15px;
+            }
+            
+            .restaurant-name {
+                font-size: 2.2rem;
+            }
+            
+            .restaurant-name::after {
+                font-size: 1.8rem;
+            }
+            
+            .card {
+                padding: 25px;
+            }
+            
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .btn-success, .btn-outline-light {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .d-flex.gap-2 {
+                flex-direction: column;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(25, 35, 50, 0.8);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+        }
+
+        /* Amount input specific styling */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Financial Elements -->
+    <div class="floating-finance finance-1">📈</div>
+    <div class="floating-finance finance-2">📉</div>
+    <div class="floating-finance finance-3">💰</div>
+    <div class="floating-finance finance-4">📊</div>
+
+    <div class="restaurant-header">
+        <h1 class="restaurant-name">Flavor Fusion's Restaurant</h1>
+        <div class="restaurant-tagline">Authentic Flavors, Unforgettable Experience</div>
+    </div>
+    
+    <div class="content-container">
+        <h3 class="page-title mb-4">Edit Transaction</h3>
+
+        <div class="card glow p-4 col-md-6 mx-auto">
+            <!-- Finance Indicator -->
+            <div class="finance-indicator"></div>
+
+            <form method="POST">
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-tag" style="margin-right: 8px; color: #3498db;"></i>
+                        Item Name
+                    </label>
+                    <input name="item_name"
+                           class="form-control"
+                           value="{{ s.item_name }}"
+                           placeholder="Enter item name"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-list-ul" style="margin-right: 8px; color: #3498db;"></i>
+                        Item Type
+                    </label>
+                    <input name="item_type"
+                           class="form-control"
+                           value="{{ s.item_type }}"
+                           placeholder="Enter item type"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-rupee-sign" style="margin-right: 8px; color: #3498db;"></i>
+                        Amount (₹)
+                    </label>
+                    <input name="transaction_amount"
+                           type="number"
+                           class="form-control"
+                           value="{{ s.transaction_amount }}"
+                           placeholder="Enter amount"
+                           step="0.01"
+                           min="0"
+                           required>
+                </div>
+
+                {% if s.transaction_type == "Expense" %}
+                <div class="mb-3">
+                    <label class="form-label">
+                        <i class="fas fa-folder" style="margin-right: 8px; color: #3498db;"></i>
+                        Expense Category
+                    </label>
+                    <input name="expense_category"
+                           class="form-control"
+                           value="{{ s.expense_category }}"
+                           placeholder="Enter expense category">
+                </div>
+                {% endif %}
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2">
+                    <button class="btn btn-success">
+                        <i class="fas fa-save" style="margin-right: 8px;"></i>
+                        Update
+                    </button>
+                    <a href="/accountant/view-table"
+                       class="btn btn-outline-light">
+                        <i class="fas fa-times-circle" style="margin-right: 8px;"></i>
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+
+            <!-- Finance Indicator -->
+            <div class="finance-indicator" style="margin-top: 25px;"></div>
+        </div>
+    </div>
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script>
+        // All original functionality preserved with enhanced animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const formControls = document.querySelectorAll('.form-control');
+            
+            // Animate form controls on page load
+            formControls.forEach((control, index) => {
+                control.style.opacity = '0';
+                control.style.transform = 'translateY(10px)';
+                
+                setTimeout(() => {
+                    control.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    control.style.opacity = '1';
+                    control.style.transform = 'translateY(0)';
+                }, 300 + (index * 100));
+                
+                // Add focus effect
+                control.addEventListener('focus', function() {
+                    this.style.transform = 'scale(1.02)';
+                    this.style.boxShadow = '0 0 20px rgba(52, 152, 219, 0.4)';
+                });
+                
+                control.addEventListener('blur', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.boxShadow = 'none';
+                });
+                
+                // Add input validation animation
+                control.addEventListener('input', function() {
+                    if (this.value.length > 0) {
+                        this.style.borderColor = '#2ecc71';
+                    } else {
+                        this.style.borderColor = 'rgba(52, 152, 219, 0.3)';
+                    }
+                });
+            });
+            
+            // Form submission animation - EXACT same functionality
+            const form = document.querySelector('form');
+            const submitBtn = document.querySelector('.btn-success');
+            const originalText = submitBtn.innerHTML;
+            
+            form.addEventListener('submit', function(e) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+                submitBtn.disabled = true;
+                submitBtn.style.background = 'linear-gradient(135deg, #2980b9, #3498db)';
+                
+                // Flash effect on card
+                const card = document.querySelector('.card');
+                card.style.transition = 'all 0.3s';
+                card.style.boxShadow = '0 0 40px rgba(52, 152, 219, 0.6)';
+                
+                setTimeout(() => {
+                    card.style.boxShadow = '0 20px 45px rgba(0, 0, 0, 0.6)';
+                }, 1000);
+                
+                // Animation for submission - exactly as before
+                setTimeout(() => {
+                    submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Updated Successfully!';
+                    submitBtn.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
+                    
+                    // Reset button after 2 seconds
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        submitBtn.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+                    }, 2000);
+                }, 1500);
+            });
+            
+            // Add hover effect for cancel button
+            const cancelBtn = document.querySelector('.btn-outline-light');
+            cancelBtn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px) scale(1.02)';
+            });
+            
+            cancelBtn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+            
+            // Prevent negative values in amount field
+            const amountInput = document.querySelector('input[name="transaction_amount"]');
+            if (amountInput) {
+                amountInput.addEventListener('keydown', function(e) {
+                    if (e.key === '-' || e.key === 'e') {
+                        e.preventDefault();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,686 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gayathri's Restaurant - Today's Menu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* ===== MODERN BISTRO THEME - STAFF DASHBOARD ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+
+        body {
+            background: linear-gradient(135deg, rgba(26, 35, 45, 0.95), rgba(38, 50, 60, 0.95)),
+                        url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            color: #e9f0f5;
+            padding: 30px 20px;
+            position: relative;
+        }
+
+        /* Modern geometric pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(45deg, rgba(100, 210, 255, 0.03) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(100, 210, 255, 0.03) 25%, transparent 25%);
+            background-size: 60px 60px;
+            pointer-events: none;
+            animation: movePattern 20s linear infinite;
+        }
+
+        @keyframes movePattern {
+            0% { background-position: 0 0; }
+            100% { background-position: 60px 60px; }
+        }
+
+        /* Floating modern icons */
+        .floating-modern {
+            position: absolute;
+            font-size: 2.2rem;
+            opacity: 0.15;
+            animation: floatModern 15s ease-in-out infinite;
+            pointer-events: none;
+            filter: drop-shadow(0 5px 15px rgba(0, 200, 255, 0.3));
+            z-index: 0;
+        }
+
+        .modern-1 { top: 12%; left: 3%; animation-delay: 0s; transform: rotate(-5deg); }
+        .modern-2 { bottom: 18%; right: 4%; animation-delay: 3s; transform: rotate(10deg); }
+        .modern-3 { top: 35%; right: 10%; animation-delay: 6s; transform: rotate(-15deg); }
+        .modern-4 { bottom: 45%; left: 8%; animation-delay: 9s; transform: rotate(5deg); }
+        .modern-5 { top: 65%; left: 15%; animation-delay: 2s; transform: rotate(-8deg); }
+        .modern-6 { bottom: 25%; right: 15%; animation-delay: 5s; transform: rotate(12deg); }
+
+        @keyframes floatModern {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            25% { transform: translateY(-12px) rotate(5deg) scale(1.05); }
+            75% { transform: translateY(8px) rotate(-5deg) scale(0.95); }
+        }
+
+        .restaurant-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 10px;
+            position: relative;
+            z-index: 1;
+            animation: slideDownModern 0.8s ease-out;
+        }
+
+        @keyframes slideDownModern {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .restaurant-name {
+            color: #64d2ff;
+            font-family: 'Manrope', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5), 0 0 30px rgba(100, 210, 255, 0.5);
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+            position: relative;
+            display: inline-block;
+            background: linear-gradient(135deg, #64d2ff, #9f7aea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .restaurant-name::before {
+            content: '⚡';
+            font-size: 2.2rem;
+            margin-right: 15px;
+            animation: energyPulse 2s ease-in-out infinite;
+            display: inline-block;
+            -webkit-text-fill-color: initial;
+            color: #ffd166;
+        }
+
+        .restaurant-name::after {
+            content: '⚡';
+            font-size: 2.2rem;
+            margin-left: 15px;
+            animation: energyPulse 2s ease-in-out infinite reverse;
+            display: inline-block;
+            -webkit-text-fill-color: initial;
+            color: #ffd166;
+        }
+
+        @keyframes energyPulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; filter: drop-shadow(0 0 10px #ffd166); }
+        }
+
+        .restaurant-tagline {
+            color: #a0b8cc;
+            font-style: italic;
+            font-size: 1rem;
+            opacity: 0.9;
+            background: rgba(38, 50, 60, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 8px 30px;
+            border-radius: 40px;
+            display: inline-block;
+            border: 1px solid rgba(100, 210, 255, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .content-container {
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeInModern 0.8s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes fadeInModern {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-title {
+            color: #64d2ff;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+            font-family: 'Manrope', sans-serif;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(100, 210, 255, 0.3);
+            letter-spacing: -0.3px;
+        }
+
+        .card {
+            background: rgba(32, 42, 52, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(100, 210, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e9f0f5;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Modern gradient border effect */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #64d2ff, #9f7aea, #ffd166);
+            border-radius: 26px;
+            opacity: 0;
+            transition: opacity 0.4s;
+            z-index: -1;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.01);
+            background: rgba(38, 50, 60, 0.9);
+            border-color: transparent;
+        }
+
+        .glow {
+            animation: modernGlow 4s infinite alternate;
+        }
+
+        @keyframes modernGlow {
+            0% {
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+                border-color: rgba(100, 210, 255, 0.1);
+            }
+            100% {
+                box-shadow: 0 20px 45px rgba(100, 210, 255, 0.2);
+                border-color: rgba(100, 210, 255, 0.3);
+            }
+        }
+
+        .table {
+            color: #e9f0f5;
+            margin-bottom: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .table-hover tbody tr:hover {
+            background: rgba(100, 210, 255, 0.15);
+            transform: scale(1.01);
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(100, 210, 255, 0.2);
+        }
+
+        thead {
+            border-bottom: 2px solid rgba(100, 210, 255, 0.5);
+            background: rgba(26, 35, 45, 0.6);
+        }
+
+        th {
+            color: #64d2ff;
+            font-weight: 600;
+            padding: 18px 15px;
+            text-align: center;
+            border: none;
+            vertical-align: middle;
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        th:nth-child(1) {
+            width: 60%;
+            text-align: left;
+            padding-left: 25px;
+        }
+
+        th:nth-child(2) {
+            width: 40%;
+            text-align: center;
+        }
+
+        td {
+            padding: 15px;
+            border-color: rgba(100, 210, 255, 0.1);
+            vertical-align: middle;
+            text-align: left;
+            font-weight: 400;
+        }
+
+        td:nth-child(1) {
+            padding-left: 25px;
+            text-align: left;
+        }
+
+        td:nth-child(2) {
+            text-align: center;
+            padding-right: 25px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: #a0b8cc !important;
+        }
+
+        .text-success {
+            color: #ffd166 !important;
+            font-weight: 700;
+            text-align: center;
+            display: block;
+            width: 100%;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #ffd166, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(255, 209, 102, 0.3);
+        }
+
+        .fw-bold {
+            font-weight: 700 !important;
+        }
+
+        .align-middle {
+            vertical-align: middle;
+        }
+
+        .mb-4 {
+            margin-bottom: 2rem;
+        }
+
+        .p-3 {
+            padding: 1.5rem !important;
+        }
+
+        /* Modern divider */
+        .modern-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(100, 210, 255, 0.6), rgba(159, 122, 234, 0.6), transparent);
+            margin: 20px 0;
+            animation: modernWave 3s ease-in-out infinite;
+        }
+
+        @keyframes modernWave {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Row styling */
+        tbody tr:nth-child(even) {
+            background-color: rgba(100, 210, 255, 0.05);
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: rgba(32, 42, 52, 0.3);
+        }
+
+        /* Animation for table rows */
+        tbody tr {
+            opacity: 0;
+            transform: translateX(-10px);
+            animation: slideIn 0.5s forwards;
+        }
+        
+        tbody tr:nth-child(1) { animation-delay: 0.1s; }
+        tbody tr:nth-child(2) { animation-delay: 0.2s; }
+        tbody tr:nth-child(3) { animation-delay: 0.3s; }
+        tbody tr:nth-child(4) { animation-delay: 0.4s; }
+        tbody tr:nth-child(5) { animation-delay: 0.5s; }
+        tbody tr:nth-child(6) { animation-delay: 0.6s; }
+        tbody tr:nth-child(7) { animation-delay: 0.7s; }
+        tbody tr:nth-child(8) { animation-delay: 0.8s; }
+        tbody tr:nth-child(9) { animation-delay: 0.9s; }
+        tbody tr:nth-child(10) { animation-delay: 1.0s; }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Price highlight effect */
+        td.text-success::before {
+            content: "₹";
+            color: #64d2ff;
+            margin-right: 4px;
+            font-size: 1rem;
+            -webkit-text-fill-color: #64d2ff;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(26, 35, 45, 0.8);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #64d2ff, #9f7aea);
+            border-radius: 10px;
+            border: 2px solid rgba(26, 35, 45, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #9f7aea, #64d2ff);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .content-container {
+                padding: 15px;
+            }
+            
+            .restaurant-name {
+                font-size: 2.2rem;
+            }
+            
+            .restaurant-name::before,
+            .restaurant-name::after {
+                font-size: 1.8rem;
+            }
+            
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .card {
+                padding: 1.2rem !important;
+            }
+            
+            th, td {
+                padding: 12px 10px;
+                font-size: 0.95rem;
+            }
+            
+            th:nth-child(1),
+            td:nth-child(1) {
+                padding-left: 15px;
+            }
+            
+            td:nth-child(2) {
+                padding-right: 15px;
+            }
+            
+            .text-success {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            body {
+                padding: 20px 15px;
+            }
+            
+            .restaurant-name {
+                font-size: 1.8rem;
+            }
+            
+            .restaurant-name::before,
+            .restaurant-name::after {
+                font-size: 1.5rem;
+            }
+            
+            .page-title {
+                font-size: 1.5rem;
+            }
+            
+            .card {
+                padding: 1rem !important;
+                overflow-x: auto;
+            }
+            
+            .table {
+                min-width: 400px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.85rem;
+            }
+            
+            th:nth-child(1),
+            td:nth-child(1) {
+                padding-left: 10px;
+            }
+            
+            td:nth-child(2) {
+                padding-right: 10px;
+            }
+            
+            .text-success {
+                font-size: 0.95rem;
+            }
+            
+            td.text-success::before {
+                margin-right: 2px;
+            }
+        }
+
+        /* Menu item styling */
+        tbody tr:hover .text-success {
+            animation: pricePulse 1s infinite;
+        }
+
+        tbody tr:hover td:first-child {
+            color: #64d2ff;
+            font-weight: 500;
+        }
+
+        /* Price animation */
+        @keyframes pricePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        /* Ensure table cells align properly */
+        .table td, .table th {
+            vertical-align: middle;
+            line-height: 1.5;
+        }
+
+        /* Fix for empty state */
+        td[colspan="2"] {
+            text-align: center !important;
+            padding: 30px !important;
+            background: rgba(100, 210, 255, 0.05);
+            border-radius: 15px;
+            color: #a0b8cc !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Modern Icons -->
+    <div class="floating-modern modern-1">⚡</div>
+    <div class="floating-modern modern-2">🔥</div>
+    <div class="floating-modern modern-3">💫</div>
+    <div class="floating-modern modern-4">✨</div>
+    <div class="floating-modern modern-5">🎯</div>
+    <div class="floating-modern modern-6">🚀</div>
+
+    <div class="restaurant-header">
+        <h1 class="restaurant-name">Flavor Fusion Restaurant</h1>
+        <div class="restaurant-tagline">Authentic Flavors, Unforgettable Experience</div>
+    </div>
+    
+    <div class="content-container">
+        <h3 class="page-title mb-4">Menu – Today's Item Prices</h3>
+
+        <div class="card glow p-3">
+            <!-- Modern divider -->
+            <div class="modern-divider" style="margin-top: 0;"></div>
+            
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Today's Price (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.item_name }}</td>
+                        <td class="text-success fw-bold">{{ item.price }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% if not items %}
+                    <tr>
+                        <td colspan="2" class="text-center text-muted">
+                            Menu not available
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            
+            <!-- Modern divider -->
+            <div class="modern-divider"></div>
+        </div>
+    </div>
+
+    <script>
+        // All original functionality preserved
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation to card on page load
+            const card = document.querySelector('.card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 300);
+            
+            // Add hover effect to table rows
+            const tableRows = document.querySelectorAll('tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.01)';
+                    this.style.boxShadow = '0 5px 15px rgba(100, 210, 255, 0.2)';
+                });
+                
+                row.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+            
+            // Highlight popular items based on price - EXACT same logic
+            tableRows.forEach(row => {
+                const priceCell = row.querySelector('.text-success');
+                if (priceCell) {
+                    const priceText = priceCell.textContent.replace('₹', '');
+                    const price = parseFloat(priceText);
+                    if (!isNaN(price)) {
+                        if (price >= 200) {
+                            row.style.borderLeft = '4px solid #ffd166';
+                            row.querySelector('td:first-child').style.fontWeight = '600';
+                        } else if (price >= 100) {
+                            row.style.borderLeft = '4px solid #9f7aea';
+                        } else {
+                            row.style.borderLeft = '4px solid #64d2ff';
+                        }
+                    }
+                }
+            });
+            
+            // Add click effect to price cells - EXACT same functionality
+            const priceCells = document.querySelectorAll('.text-success');
+            priceCells.forEach(cell => {
+                cell.addEventListener('click', function() {
+                    const originalText = this.textContent;
+                    this.textContent = '💰 ' + originalText;
+                    this.style.color = '#ffd166';
+                    
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                        this.style.color = '';
+                    }, 500);
+                });
+            });
+            
+            // Add subtle pulse animation to prices every few seconds
+            setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * priceCells.length);
+                if (priceCells[randomIndex]) {
+                    priceCells[randomIndex].style.animation = 'pricePulse 1s';
+                    setTimeout(() => {
+                        priceCells[randomIndex].style.animation = '';
+                    }, 1000);
+                }
+            }, 3000);
+            
+            // Fix column alignment on load
+            setTimeout(() => {
+                const table = document.querySelector('.table');
+                const headers = table.querySelectorAll('thead th');
+                const firstRowCells = table.querySelector('tbody tr') ? table.querySelector('tbody tr').querySelectorAll('td') : [];
+                
+                if (headers.length === 2 && firstRowCells.length === 2) {
+                    // Ensure second column is centered
+                    headers[1].style.textAlign = 'center';
+                    firstRowCells[1].style.textAlign = 'center';
+                }
+            }, 100);
+
+            // Add energy pulse to restaurant name
+            const title = document.querySelector('.restaurant-name');
+            setInterval(() => {
+                title.style.textShadow = '3px 3px 6px rgba(0,0,0,0.5), 0 0 40px rgba(100,210,255,0.7)';
+                setTimeout(() => {
+                    title.style.textShadow = '3px 3px 6px rgba(0,0,0,0.5), 0 0 20px rgba(100,210,255,0.4)';
+                }, 400);
+            }, 3000);
+        });
+        
+        // Add CSS for price pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pricePulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+            
+            /* Ensure proper column alignment */
+            table tbody tr td:last-child {
+                text-align: center !important;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
+
+{% endblock %}

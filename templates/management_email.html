@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e1e1e1;
+        }
+
+        .header {
+            background-color: #0052cc;
+            color: #ffffff;
+            padding: 35px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .content {
+            padding: 30px 25px;
+        }
+
+        .alert-section {
+            margin-bottom: 30px;
+        }
+
+        .alert-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        .description {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        th {
+            background-color: #f0f4f8;
+            color: #4a5568;
+            text-align: left;
+            padding: 14px 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #cbd5e0;
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 15px;
+            color: #2d3748;
+        }
+
+        .stock-low {
+            color: #e53e3e;
+            font-weight: bold;
+        }
+
+        .financial-section {
+            background-color: #ebf8ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #bee3f8;
+        }
+
+        .financial-title {
+            font-size: 17px;
+            color: #2c5282;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #4a5568;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .profit-row {
+            margin-top: 12px;
+            border-top: 1px dashed #a3bffa;
+            padding-top: 12px;
+        }
+
+        .profit-value {
+            color: #2f855a;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .footer {
+            background-color: #edf2f7;
+            padding: 25px;
+            text-align: center;
+            color: #718096;
+            font-size: 13px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 10px 0 25px;
+        }
+
+        .button {
+            background-color: #0056b3;
+            color: #ffffff !important;
+            padding: 14px 40px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TasteCraft</h1>
+            <p>Inventory Status Report</p>
+        </div>
+        <div class="content">
+            <!-- Financial Section -->
+            <div class="financial-section">
+                <div class="financial-title">📈 Performance Summary</div>
+                <div class="stat-row">
+                    <span class="stat-label">Total Revenue:</span>
+                    <span class="stat-value">₹{{ income|round(2) }}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Total Expense:</span>
+                    <span class="stat-value">₹{{ expense|round(2) }}</span>
+                </div>
+                <div class="stat-row profit-row">
+                    <span class="stat-label"><strong>Net Profit:</strong></span>
+                    <span class="stat-value profit-value">₹{{ profit|round(2) }}</span>
+                </div>
+            </div>
+
+            <!-- Stock Alert Section -->
+            <div class="alert-section">
+                <div class="alert-title">
+                    <span class="alert-icon">⚠️</span> Low Stock Alert (Consolidated)
+                </div>
+                <p class="description">The following products have fallen below their restocking thresholds and require
+                    your immediate attention:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PRODUCT</th>
+                            <th style="text-align: center;">CURRENT</th>
+                            <th style="text-align: center;">MIN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in low_stock_items %}
+                        <tr>
+                            <td>{{ item.item_name }}</td>
+                            <td style="text-align: center;" class="stock-low">{{ item.stock }}</td>
+                            <td style="text-align: center; color: #718096;">5</td>
+                        </tr>
+                        {% endfor %}
+                        {% if not low_stock_items %}
+                        <tr>
+                            <td colspan="3"
+                                style="text-align: center; padding: 30px; color: #a0aec0; font-style: italic;">All items
+                                are adequately stocked.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="button-container">
+                <a href="{{ dashboard_url }}" class="button">Visit Dashboard</a>
+            </div>
+        </div>
+        <div class="footer">
+            This is an automated report generated for TasteCraft Restaurant.
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,779 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* ===== ACCOUNTANT THEME - TRANSACTIONS PAGE ===== */
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto+Slab:wght@400;600;700&display=swap');
+
+    body {
+        background: linear-gradient(135deg, rgba(10, 30, 50, 0.92), rgba(20, 40, 60, 0.88)),
+                    url('https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=2026&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        font-family: 'Montserrat', sans-serif;
+        color: #f0f4f8;
+        padding: 20px;
+        position: relative;
+    }
+
+    /* Professional accounting pattern overlay */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><rect width="60" height="60" fill="none" stroke="rgba(52, 152, 219, 0.03)" stroke-width="0.5"/><path d="M30 0 L30 60 M0 30 L60 30" stroke="rgba(52, 152, 219, 0.02)" stroke-width="0.5"/></svg>');
+        pointer-events: none;
+        animation: gridMove 20s linear infinite;
+    }
+
+    @keyframes gridMove {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(30px, 30px); }
+    }
+
+    /* Floating financial elements */
+    .floating-finance {
+        position: absolute;
+        font-size: 2rem;
+        opacity: 0.1;
+        animation: floatFinance 12s ease-in-out infinite;
+        pointer-events: none;
+        text-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
+        z-index: 0;
+    }
+
+    .finance-1 { top: 15%; left: 5%; animation-delay: 0s; }
+    .finance-2 { bottom: 20%; right: 5%; animation-delay: 2s; }
+    .finance-3 { top: 25%; right: 8%; animation-delay: 4s; }
+    .finance-4 { bottom: 30%; left: 10%; animation-delay: 6s; }
+    .finance-5 { top: 60%; left: 15%; animation-delay: 8s; }
+    .finance-6 { bottom: 15%; right: 15%; animation-delay: 10s; }
+
+    @keyframes floatFinance {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-25px) rotate(3deg); }
+    }
+
+    .transactions-container {
+        background: rgba(25, 35, 50, 0.88);
+        backdrop-filter: blur(15px);
+        border-radius: 25px;
+        padding: 35px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(52, 152, 219, 0.3);
+        margin-top: 20px;
+        animation: fadeIn 0.8s ease-out;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+    }
+
+    /* Shine effect */
+    .transactions-container::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to bottom right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(52, 152, 219, 0.03) 50%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        transform: rotate(45deg);
+        animation: shine 10s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    @keyframes shine {
+        0% { transform: translateX(-100%) rotate(45deg); }
+        20%, 100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    .transactions-header {
+        text-align: center;
+        margin-bottom: 35px;
+        animation: slideDown 0.8s ease-out;
+    }
+
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .transactions-title {
+        color: #3498db;
+        font-family: 'Roboto Slab', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(52, 152, 219, 0.4);
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .transactions-title::after {
+        content: '📋';
+        font-size: 2.2rem;
+        margin-left: 15px;
+        animation: bounce 2s ease-in-out infinite;
+        display: inline-block;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+    }
+
+    .transactions-subtitle {
+        color: #ecf0f1;
+        font-style: italic;
+        font-size: 1.1rem;
+        opacity: 0.95;
+        margin-bottom: 20px;
+        font-family: 'Roboto Slab', serif;
+        background: rgba(52, 152, 219, 0.1);
+        padding: 10px 30px;
+        border-radius: 40px;
+        display: inline-block;
+        border: 1px solid rgba(52, 152, 219, 0.3);
+    }
+
+    .transactions-table {
+        background: rgba(30, 40, 55, 0.7);
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid rgba(52, 152, 219, 0.2);
+        width: 100%;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .transactions-table thead th {
+        background: linear-gradient(135deg, rgba(52, 152, 219, 0.25), rgba(41, 128, 185, 0.25));
+        color: #3498db;
+        font-weight: 600;
+        border: none;
+        border-bottom: 2px solid rgba(52, 152, 219, 0.4);
+        padding: 18px 15px;
+        text-align: center;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-family: 'Roboto Slab', serif;
+    }
+
+    .transactions-table tbody td {
+        background: rgba(35, 45, 60, 0.6);
+        color: #ecf0f1;
+        border: none;
+        border-bottom: 1px solid rgba(52, 152, 219, 0.1);
+        padding: 15px 12px;
+        vertical-align: middle;
+        text-align: center;
+        transition: all 0.3s ease;
+        font-weight: 400;
+    }
+
+    .transactions-table tbody tr {
+        transition: all 0.3s ease;
+        animation: rowFade 0.5s ease-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes rowFade {
+        to { opacity: 1; }
+    }
+
+    .transactions-table tbody tr:hover {
+        background: rgba(52, 152, 219, 0.12);
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .badge {
+        padding: 10px 18px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        min-width: 100px;
+        display: inline-block;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        letter-spacing: 0.5px;
+    }
+
+    .bg-success {
+        background: linear-gradient(135deg, #2ecc71, #27ae60) !important;
+        border: none;
+        color: white;
+    }
+
+    .bg-danger {
+        background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+        border: none;
+        color: white;
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 10px 25px;
+        border-radius: 10px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        font-size: 0.95rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    .btn-warning::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-warning:hover {
+        background: linear-gradient(135deg, #2980b9, #3498db);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.5);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-warning:hover::before {
+        width: 200px;
+        height: 200px;
+    }
+
+    .btn-warning:active {
+        transform: translateY(-1px);
+    }
+
+    .pagination-container {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        animation: fadeInUp 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn-outline-light {
+        background: transparent;
+        border: 2px solid rgba(52, 152, 219, 0.4);
+        color: #3498db;
+        font-weight: 600;
+        padding: 10px 30px;
+        border-radius: 12px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        min-width: 120px;
+        font-size: 1rem;
+        letter-spacing: 1px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-outline-light::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(52, 152, 219, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-outline-light:hover:not(:disabled)::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-outline-light:hover:not(:disabled) {
+        background: rgba(52, 152, 219, 0.1);
+        border-color: #3498db;
+        color: #5dade2;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-outline-light:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none !important;
+        border-color: rgba(52, 152, 219, 0.2);
+        color: rgba(52, 152, 219, 0.4);
+    }
+
+    .page-info {
+        color: #3498db;
+        font-weight: 600;
+        font-size: 1.1rem;
+        min-width: 140px;
+        text-align: center;
+        padding: 10px 20px;
+        background: rgba(52, 152, 219, 0.12);
+        border-radius: 40px;
+        border: 1px solid rgba(52, 152, 219, 0.3);
+        backdrop-filter: blur(5px);
+        font-family: 'Roboto Slab', serif;
+    }
+
+    .amount-cell {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #f39c12;
+        font-family: 'Roboto Slab', serif;
+    }
+
+    .item-name {
+        color: #3498db;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .date-cell {
+        color: #5dade2;
+        font-weight: 500;
+    }
+
+    .type-cell {
+        color: #bdc3c7;
+        font-weight: 400;
+    }
+
+    /* Progress indicator */
+    .finance-indicator {
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #3498db, transparent);
+        margin: 25px 0 10px;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.8; }
+    }
+
+    /* Table footer stats */
+    .table-footer-stats {
+        margin-top: 25px;
+        padding: 15px 25px;
+        background: rgba(25, 35, 50, 0.6);
+        border-radius: 15px;
+        border: 1px solid rgba(52, 152, 219, 0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        backdrop-filter: blur(5px);
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .stat-label {
+        color: #bdc3c7;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    .stat-value {
+        color: #3498db;
+        font-weight: 700;
+        font-size: 1.1rem;
+        background: rgba(52, 152, 219, 0.15);
+        padding: 5px 18px;
+        border-radius: 25px;
+        border: 1px solid rgba(52, 152, 219, 0.3);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .table-responsive {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(25, 35, 50, 0.8);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #2980b9, #3498db);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .transactions-container {
+            padding: 20px;
+        }
+        
+        .transactions-title {
+            font-size: 2rem;
+        }
+        
+        .transactions-title::after {
+            font-size: 1.8rem;
+        }
+        
+        .transactions-subtitle {
+            font-size: 0.9rem;
+            padding: 8px 20px;
+        }
+        
+        .transactions-table thead th,
+        .transactions-table tbody td {
+            padding: 12px 6px;
+            font-size: 0.85rem;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            min-width: 70px;
+        }
+        
+        .btn-warning {
+            padding: 8px 18px;
+            font-size: 0.8rem;
+        }
+        
+        .pagination-container {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .btn-outline-light {
+            width: 100%;
+            max-width: 200px;
+        }
+        
+        .table-footer-stats {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<!-- Floating Financial Elements -->
+<div class="floating-finance finance-1">📈</div>
+<div class="floating-finance finance-2">📉</div>
+<div class="floating-finance finance-3">💰</div>
+<div class="floating-finance finance-4">📊</div>
+<div class="floating-finance finance-5">💹</div>
+<div class="floating-finance finance-6">📋</div>
+
+<div class="transactions-container">
+    <div class="transactions-header">
+        <h1 class="transactions-title">All Transactions</h1>
+        <div class="transactions-subtitle">View and manage all financial transactions</div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="transactions-table table" id="accountTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Item</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Transaction</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {% for s in sales %}
+                <tr>
+                    <td class="date-cell">{{ s.date }}</td>
+                    <td class="item-name">{{ s.item_name }}</td>
+                    <td class="type-cell">{{ s.item_type }}</td>
+                    <td class="amount-cell">₹{{ s.transaction_amount }}</td>
+                    <td>
+                        <span class="badge {{ 'bg-success' if s.transaction_type == 'Income' else 'bg-danger' }}">
+                            {{ s.transaction_type }}
+                        </span>
+                    </td>
+                    
+                    <!-- EDIT NAVIGATION -->
+                    <td>
+                        <a href="/accountant/edit/{{ s.order_id }}"
+                           class="btn btn-sm btn-warning">
+                           Edit
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Table Footer Stats -->
+    <div class="table-footer-stats">
+        <div class="stat-item">
+            <span class="stat-label">Total Transactions:</span>
+            <span class="stat-value" id="totalTransactions">{{ sales|length }}</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Income:</span>
+            <span class="stat-value" id="totalIncome">₹0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Expenses:</span>
+            <span class="stat-value" id="totalExpenses">₹0</span>
+        </div>
+    </div>
+    
+    <!-- Finance Indicator -->
+    <div class="finance-indicator"></div>
+    
+    <!-- PAGINATION -->
+    <div class="pagination-container">
+        <button class="btn btn-outline-light" onclick="prevPage()" id="prevBtn">Prev</button>
+        <span id="pageInfo" class="page-info"></span>
+        <button class="btn btn-outline-light" onclick="nextPage()" id="nextBtn">Next</button>
+    </div>
+</div>
+
+<!-- ===================== -->
+<!-- PAGINATION SCRIPT -->
+<!-- ===================== -->
+<script>
+let currentPage = 1;
+const rowsPerPage = 10;
+const table = document.getElementById("accountTable");
+const rows = table.querySelectorAll("tbody tr");
+const totalPages = Math.ceil(rows.length / rowsPerPage);
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+// Calculate financial stats
+function calculateStats() {
+    let totalIncome = 0;
+    let totalExpenses = 0;
+    
+    rows.forEach(row => {
+        const amountCell = row.querySelector('.amount-cell');
+        const typeCell = row.querySelector('.badge');
+        
+        if (amountCell && typeCell) {
+            const amount = parseFloat(amountCell.innerText.replace('₹', ''));
+            const type = typeCell.innerText.trim();
+            
+            if (type === 'Income') {
+                totalIncome += amount;
+            } else {
+                totalExpenses += amount;
+            }
+        }
+    });
+    
+    document.getElementById('totalIncome').innerText = '₹' + totalIncome.toFixed(2);
+    document.getElementById('totalExpenses').innerText = '₹' + totalExpenses.toFixed(2);
+}
+
+function showPage(page) {
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    
+    // Calculate animation delay
+    let animationDelay = 0;
+    
+    rows.forEach((row, index) => {
+        const shouldShow = index >= (page - 1) * rowsPerPage &&
+                          index < page * rowsPerPage;
+        
+        if (shouldShow) {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(10px)';
+            row.style.display = "";
+            
+            setTimeout(() => {
+                row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, animationDelay);
+            
+            animationDelay += 50;
+        } else {
+            row.style.display = "none";
+        }
+    });
+    
+    document.getElementById("pageInfo").innerText =
+        `Page ${currentPage} of ${totalPages}`;
+    
+    // Update button states
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages;
+    
+    // Add visual feedback for button states
+    if (prevBtn.disabled) {
+        prevBtn.style.opacity = '0.4';
+        prevBtn.style.cursor = 'not-allowed';
+    } else {
+        prevBtn.style.opacity = '1';
+        prevBtn.style.cursor = 'pointer';
+    }
+    
+    if (nextBtn.disabled) {
+        nextBtn.style.opacity = '0.4';
+        nextBtn.style.cursor = 'not-allowed';
+    } else {
+        nextBtn.style.opacity = '1';
+        nextBtn.style.cursor = 'pointer';
+    }
+    
+    // Highlight current page
+    const pageInfo = document.getElementById("pageInfo");
+    pageInfo.style.background = 'rgba(52, 152, 219, 0.25)';
+    pageInfo.style.boxShadow = '0 0 15px rgba(52, 152, 219, 0.4)';
+    
+    setTimeout(() => {
+        pageInfo.style.transition = 'all 0.3s ease';
+        pageInfo.style.background = 'rgba(52, 152, 219, 0.12)';
+        pageInfo.style.boxShadow = 'none';
+    }, 300);
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        // Add click animation
+        prevBtn.innerHTML = '⏪ Loading...';
+        prevBtn.style.transform = 'scale(0.95)';
+        
+        setTimeout(() => {
+            showPage(currentPage - 1);
+            prevBtn.innerHTML = 'Prev';
+            prevBtn.style.transform = 'scale(1)';
+        }, 300);
+    }
+}
+
+function nextPage() {
+    if (currentPage < totalPages) {
+        // Add click animation
+        nextBtn.innerHTML = '⏩ Loading...';
+        nextBtn.style.transform = 'scale(0.95)';
+        
+        setTimeout(() => {
+            showPage(currentPage + 1);
+            nextBtn.innerHTML = 'Next';
+            nextBtn.style.transform = 'scale(1)';
+        }, 300);
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Calculate stats
+    calculateStats();
+    
+    // Animate table rows on initial load
+    rows.forEach((row, index) => {
+        row.style.animationDelay = (index * 0.05) + 's';
+    });
+    
+    // Add hover effects to table rows
+    rows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.01)';
+            this.style.boxShadow = '0 5px 15px rgba(52, 152, 219, 0.2)';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+            this.style.boxShadow = 'none';
+        });
+    });
+    
+    // Add hover effect to edit buttons
+    const editButtons = document.querySelectorAll('.btn-warning');
+    editButtons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px) scale(1.05)';
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+        
+        button.addEventListener('click', function(e) {
+            const originalText = this.innerHTML;
+            this.innerHTML = 'Opening...';
+            this.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+            }, 1000);
+        });
+    });
+    
+    // Show initial page
+    showPage(1);
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') {
+        prevPage();
+    } else if (e.key === 'ArrowRight') {
+        nextPage();
+    }
+});
+
+// Update page info on window resize
+window.addEventListener('resize', function() {
+    showPage(currentPage);
+});
+</script>
+
+{% endblock %}

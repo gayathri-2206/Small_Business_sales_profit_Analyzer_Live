@@ -1,0 +1,731 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* Modern Restaurant Theme - Matching Owner Dashboard */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+    body {
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.75)),
+            url('https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0b?auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        font-family: 'Poppins', sans-serif;
+        color: #ffffff;
+        padding: 20px;
+        position: relative;
+    }
+
+    /* Animated food particles */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(255, 99, 71, 0.15) 0%, transparent 50%);
+        pointer-events: none;
+        animation: pulseGlow 4s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.8; }
+    }
+
+    .user-management-container {
+        background: rgba(20, 20, 30, 0.85);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        margin-top: 20px;
+        animation: fadeIn 0.8s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Shine effect on container */
+    .user-management-container::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to bottom right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.05) 50%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        transform: rotate(45deg);
+        animation: shine 3s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    @keyframes shine {
+        0% { transform: translateX(-100%) rotate(45deg); }
+        20%, 100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .user-management-header {
+        text-align: center;
+        margin-bottom: 30px;
+        animation: slideDown 1s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .user-management-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .user-management-title::after {
+        content: '👥';
+        font-size: 2.5rem;
+        margin-left: 15px;
+        animation: bounce 2s ease-in-out infinite;
+        -webkit-text-fill-color: initial;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .user-management-subtitle {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        color: #FFFFFF;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(5px);
+        display: inline-block;
+        padding: 10px 30px;
+        border-radius: 50px;
+        border: 1px solid rgba(255, 215, 0, 0.5);
+        animation: fadeInUp 1s ease-out 0.3s both;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .user-table {
+        background: rgba(30, 30, 40, 0.7);
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 215, 0, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation: tableFade 0.8s ease-out 0.4s both;
+    }
+
+    @keyframes tableFade {
+        from {
+            opacity: 0;
+            transform: scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .user-table thead th {
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+        color: #FFD700;
+        font-weight: 600;
+        border: none;
+        border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        padding: 18px 15px;
+        text-align: center;
+        font-size: 1.2rem;
+        font-family: 'Playfair Display', serif;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .user-table tbody td {
+        background: rgba(40, 40, 50, 0.6);
+        color: #f8f9fa;
+        border: none;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        padding: 18px 15px;
+        vertical-align: middle;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .user-table tbody tr {
+        transition: all 0.3s ease;
+        animation: rowFade 0.5s ease-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes rowFade {
+        to {
+            opacity: 1;
+        }
+    }
+
+    .user-table tbody tr:hover {
+        background: rgba(255, 215, 0, 0.1);
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .username-cell {
+        color: #FFD700;
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-align: left;
+        padding-left: 20px;
+        font-family: 'Playfair Display', serif;
+        letter-spacing: 0.5px;
+        position: relative;
+    }
+
+    .username-cell::before {
+        content: '👤';
+        position: absolute;
+        left: -5px;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .user-table tbody tr:hover .username-cell::before {
+        opacity: 1;
+        left: -15px;
+    }
+
+    .form-control-sm {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        color: #fff;
+        border-radius: 10px;
+        padding: 10px 15px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        min-width: 150px;
+        font-weight: 500;
+    }
+
+    .form-control-sm:hover {
+        transform: scale(1.05);
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 215, 0, 0.6);
+    }
+
+    .form-control-sm:focus {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-color: #FFD700;
+        color: #fff;
+        box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
+        transform: scale(1.02);
+        outline: none;
+    }
+
+    .form-control-sm option {
+        background: rgba(30, 30, 40, 0.95);
+        color: #fff;
+        padding: 10px;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        border: none;
+        color: #1a1a1a;
+        font-weight: 600;
+        padding: 10px 25px;
+        border-radius: 10px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        min-width: 80px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-success::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(135deg, #FFA500, #FFD700);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+    }
+
+    .btn-success:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-success:active {
+        transform: translateY(-1px);
+    }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #FF6B6B, #FF4757);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 10px 25px;
+        border-radius: 10px;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        min-width: 80px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-danger::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(135deg, #FF4757, #FF6B6B);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+    }
+
+    .btn-danger:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .badge {
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        min-width: 120px;
+        display: inline-block;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        letter-spacing: 0.5px;
+    }
+
+    .badge-owner {
+        background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+        color: white;
+    }
+
+    .badge-accountant {
+        background: linear-gradient(135deg, #4ECDC4, #6AE0D8);
+        color: white;
+    }
+
+    .badge-staff {
+        background: linear-gradient(135deg, #FFD166, #FFE38E);
+        color: #333;
+    }
+
+    .current-user-text {
+        color: #FFD700;
+        font-style: italic;
+        font-weight: 600;
+        background: rgba(255, 215, 0, 0.15);
+        padding: 8px 15px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        font-size: 0.9rem;
+    }
+
+    .d-flex.gap-2 {
+        gap: 10px !important;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Floating food icons */
+    .food-icon {
+        position: absolute;
+        font-size: 2rem;
+        opacity: 0.2;
+        animation: float 6s ease-in-out infinite;
+        pointer-events: none;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        z-index: 0;
+    }
+
+    .icon-1 { top: 10%; left: 5%; animation-delay: 0s; }
+    .icon-2 { bottom: 15%; right: 5%; animation-delay: 1s; }
+    .icon-3 { top: 30%; right: 10%; animation-delay: 2s; }
+    .icon-4 { bottom: 40%; left: 8%; animation-delay: 3s; }
+    .icon-5 { top: 70%; left: 15%; animation-delay: 4s; }
+    .icon-6 { bottom: 20%; right: 15%; animation-delay: 5s; }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    /* Decorative golden line */
+    .golden-line {
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #FFD700, transparent);
+        margin: 30px 0;
+        animation: expandLine 1s ease-out;
+    }
+
+    @keyframes expandLine {
+        from { width: 0; opacity: 0; }
+        to { width: 100%; opacity: 1; }
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(30, 30, 40, 0.8);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #FFD700, #FFA500);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #FFA500, #FFD700);
+    }
+
+    /* Table footer stats */
+    .table-footer-stats {
+        margin-top: 20px;
+        padding: 15px 20px;
+        background: rgba(20, 20, 30, 0.6);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 215, 0, 0.2);
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        backdrop-filter: blur(5px);
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .stat-label {
+        color: #FFD700;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .stat-value {
+        background: rgba(255, 215, 0, 0.2);
+        padding: 5px 15px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        font-weight: 600;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .user-management-container {
+            padding: 20px;
+        }
+        
+        .user-management-title {
+            font-size: 2rem;
+        }
+        
+        .user-management-title::after {
+            font-size: 1.8rem;
+        }
+        
+        .user-table thead th,
+        .user-table tbody td {
+            padding: 12px 8px;
+            font-size: 0.9rem;
+        }
+        
+        .d-flex.gap-2 {
+            flex-direction: column;
+            gap: 5px !important;
+        }
+        
+        .form-control-sm {
+            min-width: 100px;
+            width: 100%;
+            padding: 6px 10px;
+        }
+        
+        .btn-success, .btn-danger {
+            width: 100%;
+            min-width: auto;
+            padding: 8px 15px;
+        }
+        
+        .badge {
+            min-width: 80px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+<!-- Floating Food Icons -->
+<div class="food-icon icon-1">👨‍🍳</div>
+<div class="food-icon icon-2">👩‍🍳</div>
+<div class="food-icon icon-3">🧑‍💼</div>
+<div class="food-icon icon-4">🧑‍🍳</div>
+<div class="food-icon icon-5">⭐</div>
+<div class="food-icon icon-6">🏆</div>
+
+<div class="user-management-container">
+    <div class="user-management-header">
+        <h1 class="user-management-title">User Management</h1>
+        <div class="user-management-subtitle">Manage user roles and permissions</div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="user-table table align-middle">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Update Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td class="username-cell">{{ u.username }}</td>
+                    <td>
+                        {% if u.role == 'owner' %}
+                        <span class="badge badge-owner">{{ u.role|title }}</span>
+                        {% elif u.role == 'accountant' %}
+                        <span class="badge badge-accountant">{{ u.role|title }}</span>
+                        {% elif u.role == 'staff' %}
+                        <span class="badge badge-staff">{{ u.role|title }}</span>
+                        {% else %}
+                        <span class="badge">{{ u.role|title }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="/edit_user/{{ u.username }}" class="d-flex gap-2">
+                            <select name="role" class="form-control form-control-sm">
+                                <option value="owner" {% if u.role=='owner' %}selected{% endif %}>Owner</option>
+                                <option value="accountant" {% if u.role=='accountant' %}selected{% endif %}>Accountant</option>
+                                <option value="staff" {% if u.role=='staff' %}selected{% endif %}>Staff</option>
+                            </select>
+                            <button class="btn btn-success btn-sm">Save</button>
+                        </form>
+                    </td>
+                    <td>
+                        {% if u.username != session.username %}
+                        <a href="/delete_user/{{ u.username }}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Delete this user?')">
+                           Delete
+                        </a>
+                        {% else %}
+                        <span class="current-user-text">Current User</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Table Footer Stats -->
+    <div class="table-footer-stats">
+        <div class="stat-item">
+            <span class="stat-label">Total Users:</span>
+            <span class="stat-value">{{ users|length }}</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Owners:</span>
+            <span class="stat-value" id="ownerCount">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Accountants:</span>
+            <span class="stat-value" id="accountantCount">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Staff:</span>
+            <span class="stat-value" id="staffCount">0</span>
+        </div>
+    </div>
+</div>
+
+<!-- Decorative Golden Line -->
+<div class="golden-line"></div>
+
+<script>
+    // All original functionality preserved exactly as before
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate table rows on load
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach((row, index) => {
+            row.style.animationDelay = (index * 0.1) + 's';
+        });
+        
+        // Add hover effects to form controls
+        const formControls = document.querySelectorAll('.form-control-sm');
+        formControls.forEach(control => {
+            control.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            
+            control.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+            
+            control.addEventListener('focus', function() {
+                this.style.background = 'rgba(255, 255, 255, 0.2)';
+                this.style.borderColor = '#ff6b6b';
+            });
+            
+            control.addEventListener('blur', function() {
+                this.style.background = 'rgba(255, 255, 255, 0.1)';
+                this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            });
+        });
+        
+        // Form submission feedback - EXACTLY as before
+        const forms = document.querySelectorAll('form[action^="/edit_user/"]');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('.btn-success');
+                const originalText = submitBtn.innerHTML;
+                const originalBg = submitBtn.style.background;
+                
+                submitBtn.innerHTML = 'Saving...';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.8';
+                
+                // For demo purposes - in real implementation, this would be handled by backend
+                setTimeout(() => {
+                    submitBtn.innerHTML = 'Saved!';
+                    submitBtn.style.background = 'linear-gradient(to right, #ff6b6b, #ff8e8e)';
+                    
+                    // Reset button after 1.5 seconds
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        submitBtn.style.opacity = '1';
+                        submitBtn.style.background = originalBg || 'linear-gradient(to right, #4ecdc4, #6ae0d8)';
+                        
+                        // Reload the page to show updated roles
+                        setTimeout(() => {
+                            location.reload();
+                        }, 500);
+                    }, 1500);
+                }, 800);
+            });
+        });
+        
+        // Add confirmation dialog with custom styling
+        const deleteLinks = document.querySelectorAll('a[href^="/delete_user/"]');
+        deleteLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Visual feedback before redirect
+                link.innerHTML = 'Deleting...';
+                link.style.background = 'linear-gradient(to right, #ff5252, #ff7b7b)';
+                link.style.opacity = '0.8';
+                
+                // Allow the default action to proceed
+                return true;
+            });
+        });
+        
+        // Highlight current user row
+        const currentUserRows = document.querySelectorAll('td .current-user-text');
+        currentUserRows.forEach(text => {
+            const row = text.closest('tr');
+            row.style.backgroundColor = 'rgba(255, 215, 0, 0.15)';
+            row.style.borderLeft = '3px solid #FFD700';
+        });
+
+        // Calculate role counts for footer stats
+        const roles = document.querySelectorAll('.badge');
+        let ownerCount = 0, accountantCount = 0, staffCount = 0;
+        
+        roles.forEach(badge => {
+            const role = badge.textContent.trim().toLowerCase();
+            if (role.includes('owner')) ownerCount++;
+            else if (role.includes('accountant')) accountantCount++;
+            else if (role.includes('staff')) staffCount++;
+        });
+
+        document.getElementById('ownerCount').textContent = ownerCount;
+        document.getElementById('accountantCount').textContent = accountantCount;
+        document.getElementById('staffCount').textContent = staffCount;
+    });
+</script>
+
+{% endblock %}

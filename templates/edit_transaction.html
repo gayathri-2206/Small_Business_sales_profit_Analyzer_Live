@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+        background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+                    url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #fff;
+        padding: 20px;
+    }
+    
+    .edit-transaction-container {
+        background: rgba(30, 30, 40, 0.85);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 107, 107, 0.2);
+        margin-top: 20px;
+        animation: fadeIn 0.8s ease-out;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .edit-transaction-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .edit-transaction-title {
+        color: #ff6b6b;
+        font-family: 'Georgia', serif;
+        font-size: 2.2rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+    }
+    
+    .edit-transaction-subtitle {
+        color: #4ecdc4;
+        font-style: italic;
+        font-size: 1rem;
+        opacity: 0.9;
+        margin-bottom: 20px;
+    }
+    
+    .transaction-id-badge {
+        display: inline-block;
+        background: linear-gradient(to right, #4ecdc4, #6ae0d8);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: 600;
+        margin-top: 5px;
+        font-size: 0.9rem;
+    }
+    
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border-radius: 8px;
+        padding: 12px 15px;
+        transition: all 0.3s;
+        font-size: 1rem;
+    }
+    
+    .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.15);
+        border-color: #ff6b6b;
+        color: #fff;
+        box-shadow: 0 0 0 0.25rem rgba(255, 107, 107, 0.25);
+    }
+    
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .form-control option {
+        background: rgba(30, 30, 40, 0.9);
+        color: #fff;
+    }
+    
+    label {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
+        font-size: 0.95rem;
+    }
+    
+    .btn-success {
+        background: linear-gradient(to right, #4ecdc4, #6ae0d8);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 12px 40px;
+        border-radius: 8px;
+        transition: all 0.3s;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .btn-success:hover {
+        background: linear-gradient(to right, #3dbdb4, #5ad0c8);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        padding: 12px 40px;
+        border-radius: 8px;
+        transition: all 0.3s;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+        margin-left: 15px;
+    }
+    
+    .btn-secondary:hover {
+        background: linear-gradient(to right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.3));
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+        color: #fff;
+        text-decoration: none;
+    }
+    
+    .form-row {
+        margin-bottom: 20px;
+    }
+    
+    .input-group {
+        position: relative;
+    }
+    
+    .input-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4ecdc4;
+        font-size: 1.2rem;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .currency-symbol {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 600;
+        font-size: 1rem;
+    }
+    
+    .amount-input {
+        padding-left: 40px !important;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .edit-transaction-container {
+            padding: 20px;
+        }
+        
+        .edit-transaction-title {
+            font-size: 1.8rem;
+        }
+        
+        .edit-transaction-subtitle {
+            font-size: 0.9rem;
+        }
+        
+        .col-md-4, .col-md-3 {
+            margin-bottom: 15px;
+        }
+        
+        .btn-success, .btn-secondary {
+            width: 100%;
+            margin: 5px 0;
+            padding: 12px 20px;
+        }
+        
+        .btn-secondary {
+            margin-left: 0;
+        }
+    }
+</style>
+
+<div class="edit-transaction-container">
+    <div class="edit-transaction-header">
+        <div class="edit-transaction-title">Edit Transaction</div>
+        <div class="edit-transaction-subtitle">Update transaction details below</div>
+        {% if tx.order_id %}
+        <div class="transaction-id-badge">Transaction ID: {{ tx.order_id }}</div>
+        {% endif %}
+    </div>
+    
+    <form method="POST" class="row g-3">
+        <div class="col-md-4">
+            <label>Date</label>
+            <input type="date" class="form-control" name="date" value="{{ tx.date }}" required>
+        </div>
+        
+        <div class="col-md-4">
+            <label>Item Name</label>
+            <input type="text" class="form-control" name="item_name" value="{{ tx.item_name }}" required>
+        </div>
+        
+        <div class="col-md-4">
+            <label>Category</label>
+            <input type="text" class="form-control" name="item_type" value="{{ tx.item_type }}" required>
+        </div>
+        
+        <div class="col-md-3">
+            <label>Item Price</label>
+            <div class="input-group">
+                <span class="currency-symbol">₹</span>
+                <input type="number" class="form-control amount-input" name="item_price" value="{{ tx.item_price }}" required step="0.01">
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <label>Quantity</label>
+            <input type="number" class="form-control" name="quantity" value="{{ tx.quantity }}" required min="1">
+        </div>
+        
+        <div class="col-md-3">
+            <label>Total Amount</label>
+            <div class="input-group">
+                <span class="currency-symbol">₹</span>
+                <input type="number" class="form-control amount-input" name="transaction_amount"
+                       value="{{ tx.transaction_amount }}" required step="0.01">
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <label>Transaction Type</label>
+            <select class="form-control" name="transaction_type">
+                <option value="Income" {% if tx.transaction_type == "Income" %}selected{% endif %}>Income</option>
+                <option value="Expense" {% if tx.transaction_type == "Expense" %}selected{% endif %}>Expense</option>
+            </select>
+        </div>
+        
+        <div class="col-12 mt-4 text-center">
+            <button class="btn btn-success">Update Transaction</button>
+            <a href="/owner" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Add animations and interactivity
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate form inputs on load
+        const formControls = document.querySelectorAll('.form-control');
+        formControls.forEach((control, index) => {
+            control.style.opacity = '0';
+            control.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                control.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                control.style.opacity = '1';
+                control.style.transform = 'translateY(0)';
+            }, 100 * index);
+        });
+        
+        // Add hover effects to form controls
+        formControls.forEach(control => {
+            control.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+            });
+            
+            control.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+            
+            control.addEventListener('focus', function() {
+                this.style.background = 'rgba(255, 255, 255, 0.2)';
+                this.style.borderColor = '#ff6b6b';
+            });
+            
+            control.addEventListener('blur', function() {
+                this.style.background = 'rgba(255, 255, 255, 0.1)';
+                this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            });
+        });
+        
+        // Form submission feedback
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('.btn-success');
+            const cancelBtn = this.querySelector('.btn-secondary');
+            const originalText = submitBtn.innerHTML;
+            const originalBg = submitBtn.style.background;
+            
+            submitBtn.innerHTML = 'Updating...';
+            submitBtn.disabled = true;
+            cancelBtn.disabled = true;
+            submitBtn.style.opacity = '0.8';
+            cancelBtn.style.opacity = '0.5';
+            
+            // For demo purposes - in real implementation, this would be handled by backend
+            setTimeout(() => {
+                submitBtn.innerHTML = 'Updated!';
+                submitBtn.style.background = 'linear-gradient(to right, #ff6b6b, #ff8e8e)';
+                
+                // Redirect after 1.5 seconds
+                setTimeout(() => {
+                    // In real implementation, this would be handled by form submission
+                    // For demo, we'll simulate a redirect
+                    window.location.href = '/owner';
+                }, 1500);
+            }, 800);
+        });
+        
+        // Auto-calculate total amount when quantity or price changes
+        const quantityInput = document.querySelector('input[name="quantity"]');
+        const priceInput = document.querySelector('input[name="item_price"]');
+        const totalInput = document.querySelector('input[name="transaction_amount"]');
+        
+        function calculateTotal() {
+            if (quantityInput && priceInput && totalInput) {
+                const quantity = parseFloat(quantityInput.value) || 0;
+                const price = parseFloat(priceInput.value) || 0;
+                const total = quantity * price;
+                
+                if (!isNaN(total) && total >= 0) {
+                    totalInput.value = total.toFixed(2);
+                    
+                    // Add visual feedback
+                    totalInput.style.borderColor = '#4ecdc4';
+                    totalInput.style.boxShadow = '0 0 0 0.25rem rgba(78, 205, 196, 0.25)';
+                    
+                    setTimeout(() => {
+                        totalInput.style.borderColor = '';
+                        totalInput.style.boxShadow = '';
+                    }, 1000);
+                }
+            }
+        }
+        
+        if (quantityInput && priceInput && totalInput) {
+            quantityInput.addEventListener('input', calculateTotal);
+            priceInput.addEventListener('input', calculateTotal);
+            
+            // Also calculate on page load
+            calculateTotal();
+        }
+        
+        // Add visual feedback for transaction type selection
+        const typeSelect = document.querySelector('select[name="transaction_type"]');
+        if (typeSelect) {
+            typeSelect.addEventListener('change', function() {
+                if (this.value === 'Income') {
+                    this.style.borderColor = '#4ecdc4';
+                    this.style.boxShadow = '0 0 0 0.25rem rgba(78, 205, 196, 0.25)';
+                } else {
+                    this.style.borderColor = '#ff6b6b';
+                    this.style.boxShadow = '0 0 0 0.25rem rgba(255, 107, 107, 0.25)';
+                }
+                
+                setTimeout(() => {
+                    this.style.borderColor = '';
+                    this.style.boxShadow = '';
+                }, 1000);
+            });
+        }
+    });
+</script>
+
+{% endblock %}

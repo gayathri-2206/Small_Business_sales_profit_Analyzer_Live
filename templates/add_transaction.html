@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.transaction-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.transaction-header {
+    background: linear-gradient(135deg, #000, #1a1a1a);
+    padding: 20px;
+    border-radius: 10px 10px 0 0;
+    border-bottom: 3px solid #ffd700;
+    margin-bottom: 0;
+}
+
+.transaction-header h4 {
+    margin: 0;
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.transaction-header p {
+    margin: 5px 0 0;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.glow-card {
+    background: rgba(18, 18, 18, 0.95);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: fadeIn 0.5s ease-out;
+    padding: 25px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-label {
+    color: #ffd700;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.form-control, .form-select {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #333;
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    color: #fff;
+}
+
+.form-control::placeholder {
+    color: #666;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #ffd700, #ffed4a);
+    color: #000;
+    border: none;
+    padding: 12px 30px;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+    color: #000;
+}
+
+.btn-submit::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-submit:active::after {
+    width: 300px;
+    height: 300px;
+}
+
+.alert-warning {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid #ffc107;
+    color: #ffc107;
+    border-radius: 5px;
+}
+
+.expense-field {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.quick-info {
+    background: rgba(255, 215, 0, 0.05);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-left: 3px solid #ffd700;
+}
+
+.quick-info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ddd;
+    margin-bottom: 8px;
+}
+
+.quick-info-item i {
+    color: #ffd700;
+    width: 20px;
+}
+
+/* Loading spinner */
+.spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #fff;
+    border-top: 3px solid #ffd700;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .transaction-container {
+        padding: 10px;
+    }
+}
+</style>
+
+<div class="transaction-container">
+    <!-- Header -->
+    <div class="transaction-header">
+        <h4><i class="fas fa-exchange-alt me-2"></i>Add New Transaction</h4>
+        <p>Record income or expense transactions for your restaurant</p>
+    </div>
+
+    <!-- Main Form Card -->
+    <div class="glow-card">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Quick Info Section -->
+        <div class="quick-info">
+            <div class="quick-info-item">
+                <i class="fas fa-user"></i>
+                <span>Logged in as: <strong class="text-warning">{{ session.username }}</strong> ({{ session.role }})</span>
+            </div>
+            <div class="quick-info-item">
+                <i class="fas fa-calendar"></i>
+                <span>Today's Date: <strong class="text-warning">{{ now.strftime('%Y-%m-%d') }}</strong></span>
+            </div>
+        </div>
+
+        <!-- Transaction Form -->
+        <form method="POST" action="/add_transaction" class="row g-4" id="transactionForm">
+            <!-- Date -->
+            <div class="col-md-4">
+                <label class="form-label">
+                    <i class="fas fa-calendar-alt me-2"></i>Date
+                </label>
+                <input type="date" name="date" class="form-control" 
+                       value="{{ now.strftime('%Y-%m-%d') }}" required>
+            </div>
+
+            <!-- Item Name -->
+            <div class="col-md-4">
+                <label class="form-label">
+                    <i class="fas fa-box me-2"></i>Item Name
+                </label>
+                <input type="text" name="item_name" class="form-control" 
+                       placeholder="Enter item name" required>
+            </div>
+
+            <!-- Category -->
+            <div class="col-md-4">
+                <label class="form-label">
+                    <i class="fas fa-tag me-2"></i>Category
+                </label>
+                <input type="text" name="item_type" class="form-control" 
+                       placeholder="e.g., Food, Beverage, Supplies" required>
+            </div>
+
+            <!-- Quantity -->
+            <div class="col-md-3">
+                <label class="form-label">
+                    <i class="fas fa-sort-amount-up me-2"></i>Quantity
+                </label>
+                <input type="number" name="quantity" class="form-control" 
+                       min="1" value="1" required>
+            </div>
+
+            <!-- Transaction Type -->
+            <div class="col-md-3">
+                <label class="form-label">
+                    <i class="fas fa-arrow-circle-up me-2"></i>Transaction Type
+                </label>
+                <select id="txnType" name="transaction_type" class="form-select" required>
+                    <option value="Income">💰 Income</option>
+                    <option value="Expense">💸 Expense</option>
+                </select>
+            </div>
+
+            <!-- Expense Category (Hidden by default) -->
+            <div class="col-md-3" id="expenseCategoryField" style="display:none;">
+                <label class="form-label">
+                    <i class="fas fa-list me-2"></i>Expense Category
+                </label>
+                <select name="expense_category" id="expenseCategory" class="form-select">
+                    <option value="">Select Category</option>
+                    <option value="Raw materials">🥩 Raw materials</option>
+                    <option value="Vegetables & groceries">🥬 Vegetables & groceries</option>
+                    <option value="Cleaning supplies">🧹 Cleaning supplies</option>
+                    <option value="Gas / fuel">⛽ Gas / fuel</option>
+                    <option value="Minor repairs">🔧 Minor repairs</option>
+                    <option value="Other">📦 Other</option>
+                </select>
+            </div>
+
+            <!-- Expense Amount (Hidden by default) -->
+            <div class="col-md-3" id="expenseAmountField" style="display:none;">
+                <label class="form-label">
+                    <i class="fas fa-money-bill-wave me-2"></i>Expense Amount (₹)
+                </label>
+                <input type="number" step="0.01" name="expense_amount"
+                       id="expenseAmount" class="form-control"
+                       placeholder="Enter amount">
+            </div>
+
+            <!-- Submit Button -->
+            <div class="col-12 text-end mt-4">
+                <button type="button" class="btn btn-secondary me-2" onclick="window.history.back()">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <i class="fas fa-check-circle me-2"></i>Add Transaction
+                    <span class="spinner" id="loadingSpinner"></span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Form Footer with tips -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="alert alert-info" style="background: rgba(23, 162, 184, 0.1); border-color: #17a2b8; color: #17a2b8;">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    <strong>Quick Tips:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>For Income transactions, amount is calculated based on item price × quantity</li>
+                        <li>For Expense transactions, enter the amount and category manually</li>
+                        <li>Low stock warnings will appear automatically when stock is below 5 units</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const txnType = document.getElementById("txnType");
+    const expenseCategoryField = document.getElementById("expenseCategoryField");
+    const expenseAmountField = document.getElementById("expenseAmountField");
+    const expenseCategory = document.getElementById("expenseCategory");
+    const expenseAmount = document.getElementById("expenseAmount");
+    const submitBtn = document.getElementById("submitBtn");
+    const loadingSpinner = document.getElementById("loadingSpinner");
+    const form = document.getElementById("transactionForm");
+
+    function toggleExpenseFields() {
+        if (txnType.value === "Expense") {
+            // Show expense fields with animation
+            expenseCategoryField.style.display = "block";
+            expenseAmountField.style.display = "block";
+            expenseCategoryField.classList.add("expense-field");
+            expenseAmountField.classList.add("expense-field");
+            
+            // Make fields required
+            expenseCategory.setAttribute("required", "required");
+            expenseAmount.setAttribute("required", "required");
+        } else {
+            // Hide expense fields
+            expenseCategoryField.style.display = "none";
+            expenseAmountField.style.display = "none";
+            expenseCategoryField.classList.remove("expense-field");
+            expenseAmountField.classList.remove("expense-field");
+            
+            // Remove required attribute
+            expenseCategory.removeAttribute("required");
+            expenseAmount.removeAttribute("required");
+            
+            // Clear values
+            expenseCategory.value = "";
+            expenseAmount.value = "";
+        }
+    }
+
+    // Show loading spinner on form submit
+    form.addEventListener("submit", function(e) {
+        if (form.checkValidity()) {
+            submitBtn.disabled = true;
+            loadingSpinner.style.display = "inline-block";
+            submitBtn.innerHTML = 'Processing... <span class="spinner" style="display:inline-block"></span>';
+        }
+    });
+
+    // Initialize toggle
+    toggleExpenseFields();
+    
+    // Add change listener
+    txnType.addEventListener("change", toggleExpenseFields);
+
+    // Auto-calculate or suggest based on item name (optional enhancement)
+    const itemNameInput = document.querySelector('input[name="item_name"]');
+    if (itemNameInput) {
+        itemNameInput.addEventListener("blur", function() {
+            // You could add AJAX here to fetch item price if needed
+            console.log("Item name entered:", this.value);
+        });
+    }
+});
+</script>
+
+<!-- Add Font Awesome if not already in base.html -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+{% endblock %}

@@ -1,0 +1,845 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gayathri's Restaurant - Accountant Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Professional Accountant Theme - Distinct from Owner Dashboard */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto+Slab:wght@400;600;700&display=swap');
+
+        body {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.75)),
+                        url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=2070&q=80');
+             background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    color: #ffffff;
+    padding: 20px;
+    position: relative;
+        }
+
+        /* Subtle professional pattern overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="rgba(52, 152, 219, 0.03)" stroke-width="0.5" stroke-dasharray="5 5"/></svg>');
+            pointer-events: none;
+            animation: gridMove 15s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(20px, 20px); }
+        }
+
+        .accountant-container {
+            animation: fadeIn 0.8s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .accountant-header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .accountant-title {
+            font-family: 'Roboto Slab', serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #3498db;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4), 0 0 20px rgba(52, 152, 219, 0.3);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .accountant-title::after {
+            content: '📊';
+            font-size: 2.5rem;
+            margin-left: 15px;
+            animation: pulse 2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.9; }
+        }
+
+        .accountant-subtitle {
+            font-family: 'Roboto Slab', serif;
+            font-size: 1.2rem;
+            color: #ecf0f1;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            background: rgba(52, 152, 219, 0.15);
+            backdrop-filter: blur(5px);
+            display: inline-block;
+            padding: 12px 35px;
+            border-radius: 40px;
+            border: 1px solid rgba(52, 152, 219, 0.4);
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards with professional blue theme */
+        .card.glow {
+            background: rgba(25, 35, 50, 0.85);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card.glow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.1), transparent);
+            transition: left 0.8s;
+        }
+
+        .card.glow:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(52, 152, 219, 0.6);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 0 0 30px rgba(52, 152, 219, 0.2);
+        }
+
+        .card.glow:hover::before {
+            left: 100%;
+        }
+
+        .summary-card {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 16px;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::after {
+            content: '💰';
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            font-size: 5rem;
+            opacity: 0.1;
+            transform: rotate(-10deg);
+        }
+
+        .summary-card h6 {
+            color: #bdc3c7;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .summary-card h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+            font-family: 'Roboto Slab', serif;
+        }
+
+        .text-success {
+            color: #2ecc71 !important;
+            text-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .text-danger {
+            color: #e74c3c !important;
+            text-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .text-warning {
+            color: #f39c12 !important;
+            text-shadow: 0 0 15px rgba(243, 156, 18, 0.3);
+        }
+
+        /* Professional form controls */
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            color: #ecf0f1;
+            border-radius: 10px;
+            padding: 12px 18px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .form-control:hover {
+            background-color: rgba(255, 255, 255, 0.12);
+            border-color: rgba(52, 152, 219, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: #3498db;
+            color: #fff;
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+            transform: scale(1.02);
+        }
+
+        .form-control::placeholder {
+            color: rgba(236, 240, 241, 0.5);
+            font-weight: 400;
+        }
+
+        /* Professional buttons */
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 25px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-success::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-success:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(243, 156, 18, 0.4);
+        }
+
+        .btn-outline-light {
+            background: transparent;
+            border: 2px solid #3498db;
+            color: #3498db;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-outline-light:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        h5 {
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            font-family: 'Roboto Slab', serif;
+            position: relative;
+            display: inline-block;
+        }
+
+        h5::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: #3498db;
+            border-radius: 2px;
+            animation: lineExpand 0.5s ease-out;
+        }
+
+        @keyframes lineExpand {
+            from { width: 0; }
+            to { width: 60px; }
+        }
+
+        h6.text-center {
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-family: 'Roboto Slab', serif;
+        }
+
+        /* Table styling */
+        .table-dark {
+            background: rgba(30, 40, 55, 0.7);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .table-dark tr {
+            background: rgba(35, 45, 60, 0.6);
+            color: #ecf0f1;
+            border-bottom: 1px solid rgba(52, 152, 219, 0.1);
+            transition: all 0.3s;
+        }
+
+        .table-dark td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+
+        .table-dark tr:hover {
+            background: rgba(52, 152, 219, 0.15);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Chart styling */
+        canvas {
+            background: rgba(25, 35, 50, 0.7);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+            width: 100% !important;
+            height: auto !important;
+            transition: all 0.3s;
+        }
+
+        canvas:hover {
+            border-color: rgba(52, 152, 219, 0.5);
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.1);
+        }
+
+        .chart-container {
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Professional floating elements */
+        .floating-element {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatElement 10s ease-in-out infinite;
+        }
+
+        .float-1 { top: 10%; left: 5%; animation-delay: 0s; }
+        .float-2 { bottom: 15%; right: 5%; animation-delay: 2s; }
+        .float-3 { top: 30%; right: 10%; animation-delay: 4s; }
+        .float-4 { bottom: 40%; left: 8%; animation-delay: 6s; }
+
+        @keyframes floatElement {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* Progress indicator */
+        .progress-indicator {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #3498db, transparent);
+            margin: 20px 0;
+            animation: progressPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes progressPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .accountant-title {
+                font-size: 2rem;
+            }
+            
+            .accountant-title::after {
+                font-size: 1.8rem;
+            }
+            
+            .accountant-subtitle {
+                font-size: 1rem;
+                padding: 8px 20px;
+            }
+            
+            .summary-card {
+                padding: 20px 10px;
+                margin-bottom: 15px;
+            }
+            
+            .summary-card h2 {
+                font-size: 1.8rem;
+            }
+            
+            .d-flex {
+                flex-direction: column;
+            }
+            
+            .me-2 {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .btn-outline-light {
+                width: 100%;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30, 40, 55, 0.8);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Professional floating elements -->
+<div class="floating-element float-1">📈</div>
+<div class="floating-element float-2">📉</div>
+<div class="floating-element float-3">💹</div>
+<div class="floating-element float-4">📊</div>
+
+<div class="accountant-container">
+    <div class="accountant-header">
+        <h1 class="accountant-title">Accounts Administration Panel</h1>
+        <div class="accountant-subtitle">Financial management and product control</div>
+    </div>
+    
+    <!-- ================= TOP CARDS ================= -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3 mb-md-0">
+            <div class="card glow summary-card">
+                <h6>Total Sales</h6>
+                <h2 class="text-success">₹{{ total_sales }}</h2>
+                <div class="progress-indicator" style="width: 100%; margin-top: 15px;"></div>
+                <small style="color: #2ecc71;">↑ +12.5% from last month</small>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3 mb-md-0">
+            <div class="card glow summary-card">
+                <h6>Today's Expenses</h6>
+                <h2 class="text-danger">₹24561.0</h2>
+                <div class="progress-indicator" style="width: 65%; margin-top: 15px;"></div>
+                <small style="color: #e74c3c;">↓ -5.2% from yesterday</small>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card glow summary-card">
+                <h6>This Month Expenses</h6>
+                <h2 class="text-warning">₹28782.0</h2>
+                <div class="progress-indicator" style="width: 85%; margin-top: 15px;"></div>
+                <small style="color: #f39c12;">On track with budget</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card glow p-4 mb-4">
+        <h5>Edit Product Price</h5>
+        <div class="table-responsive">
+            <table class="table table-dark">
+                {% for item in inventory %}
+                <tr>
+                    <td style="color: #3498db; font-weight: 600;">{{ item.item_name }}</td>
+                    <td>
+                        <form method="POST" action="/accountant/edit-price/{{ item.item_name }}" class="d-flex">
+                            <input name="price" value="{{ item.price }}" class="form-control me-2" type="number" step="0.01">
+                            <button class="btn btn-warning btn-sm">Update</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    
+    <!-- ================= CHARTS ================= -->
+    <div class="row mb-4">
+        <div class="col-md-6 chart-container">
+            <div class="card glow p-3">
+                <h6 class="text-center mb-3">Monthly Expense Chart</h6>
+                <canvas id="monthlyExpenseChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6 chart-container">
+            <div class="card glow p-3">
+                <h6 class="text-center mb-3">Expense Distribution</h6>
+                <canvas id="expensePieChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card glow p-4 mb-4">
+        <h6 class="text-center mb-3">Revenue vs Expense vs Profit</h6>
+        <canvas id="stackedFinanceChart" height="130"></canvas>
+    </div>
+    
+    <!-- ================= EXPORT ================= -->
+    <div class="text-center mt-4">
+        <a href="/accountant/export" class="btn btn-outline-light">
+            ⬇ Download Report (CSV)
+        </a>
+    </div>
+</div>
+
+<script>
+    // All original functionality preserved exactly as before
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate summary cards on load
+        const summaryCards = document.querySelectorAll('.summary-card');
+        summaryCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 200 * index);
+        });
+        
+        // Add hover effects to form controls
+        const formControls = document.querySelectorAll('.form-control');
+        formControls.forEach(control => {
+            control.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+            });
+            
+            control.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+            
+            control.addEventListener('focus', function() {
+                this.style.background = 'rgba(255, 255, 255, 0.2)';
+                this.style.borderColor = '#ff6b6b';
+            });
+            
+            control.addEventListener('blur', function() {
+                this.style.background = 'rgba(255, 255, 255, 0.1)';
+                this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            });
+        });
+        
+        // Form submission feedback for add product
+        const addProductForm = document.querySelector('form[action="/accountant/add-product"]');
+        if (addProductForm) {
+            addProductForm.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('.btn-success');
+                const originalText = submitBtn.innerHTML;
+                const originalBg = submitBtn.style.background;
+                
+                submitBtn.innerHTML = 'Adding...';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.8';
+                
+                setTimeout(() => {
+                    submitBtn.innerHTML = 'Added!';
+                    submitBtn.style.background = 'linear-gradient(to right, #ff6b6b, #ff8e8e)';
+                    
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        submitBtn.style.opacity = '1';
+                        submitBtn.style.background = originalBg || 'linear-gradient(to right, #4ecdc4, #6ae0d8)';
+                    }, 1500);
+                }, 800);
+            });
+        }
+        
+        // Form submission feedback for edit price forms
+        const editForms = document.querySelectorAll('form[action^="/accountant/edit-price/"]');
+        editForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('.btn-warning');
+                const originalText = submitBtn.innerHTML;
+                const originalBg = submitBtn.style.background;
+                
+                submitBtn.innerHTML = 'Updating...';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.8';
+                
+                setTimeout(() => {
+                    submitBtn.innerHTML = 'Updated!';
+                    submitBtn.style.background = 'linear-gradient(to right, #ff6b6b, #ff8e8e)';
+                    
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        submitBtn.style.opacity = '1';
+                        submitBtn.style.background = originalBg || 'linear-gradient(to right, #ffd166, #ffe38e)';
+                    }, 1500);
+                }, 800);
+            });
+        });
+        
+        // Download button animation
+        const downloadBtn = document.querySelector('.btn-outline-light');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('mouseenter', function() {
+                this.innerHTML = '⬇ Download Report (CSV)';
+            });
+            
+            downloadBtn.addEventListener('mouseleave', function() {
+                this.innerHTML = '⬇ Download Report (CSV)';
+            });
+        }
+        
+        // Highlight table rows
+        const tableRows = document.querySelectorAll('.table-dark tr');
+        tableRows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(-10px)';
+            
+            setTimeout(() => {
+                row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateX(0)';
+            }, 100 * index);
+        });
+        
+        // Initialize Charts - EXACT same as before
+        initializeCharts();
+    });
+    
+    function initializeCharts() {
+        // Monthly Expense Chart
+        const ctx1 = document.getElementById('monthlyExpenseChart').getContext('2d');
+        const monthlyExpenseChart = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                datasets: [{
+                    label: 'Expenses (₹)',
+                    data: [28000, 32000, 29000, 34000, 31000, 36000, 28782],
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#fff'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#b0b0b0'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#b0b0b0'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Expense Pie Chart
+        const ctx2 = document.getElementById('expensePieChart').getContext('2d');
+        const expensePieChart = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Raw Materials', 'Groceries', 'Cleaning', 'Gas/Fuel', 'Repairs', 'Other'],
+                datasets: [{
+                    data: [35, 25, 15, 10, 10, 5],
+                    backgroundColor: [
+                        'rgba(231, 76, 60, 0.8)',
+                        'rgba(46, 204, 113, 0.8)',
+                        'rgba(243, 156, 18, 0.8)',
+                        'rgba(52, 152, 219, 0.8)',
+                        'rgba(155, 89, 182, 0.8)',
+                        'rgba(149, 165, 166, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(231, 76, 60, 1)',
+                        'rgba(46, 204, 113, 1)',
+                        'rgba(243, 156, 18, 1)',
+                        'rgba(52, 152, 219, 1)',
+                        'rgba(155, 89, 182, 1)',
+                        'rgba(149, 165, 166, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#fff',
+                            padding: 20
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Stacked Finance Chart
+        const ctx3 = document.getElementById('stackedFinanceChart').getContext('2d');
+        const stackedFinanceChart = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                datasets: [
+                    {
+                        label: 'Revenue',
+                        data: [45000, 52000, 48000, 55000],
+                        backgroundColor: 'rgba(46, 204, 113, 0.8)',
+                        borderColor: 'rgba(46, 204, 113, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Expenses',
+                        data: [28000, 32000, 29000, 28782],
+                        backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Profit',
+                        data: [17000, 20000, 19000, 26218],
+                        backgroundColor: 'rgba(243, 156, 18, 0.8)',
+                        borderColor: 'rgba(243, 156, 18, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: {
+                            color: '#b0b0b0'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    y: {
+                        stacked: false,
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#b0b0b0'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#fff'
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
+
+{% endblock %}

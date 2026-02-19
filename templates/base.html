@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restaurant System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Vertical Navigation Styles */
+        body {
+            min-height: 100vh;
+            background-color: #1a1a1a;
+        }
+
+        .wrapper {
+            display: flex;
+            width: 100%;
+        }
+
+        /* Vertical Sidebar Navigation */
+        .vertical-nav {
+            min-width: 280px;
+            max-width: 280px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: linear-gradient(180deg, #000000 0%, #1a1a1a 100%);
+            border-right: 2px solid #ffd700;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+            overflow-y: auto;
+            z-index: 1000;
+            padding: 20px 0;
+        }
+
+        /* Main content area */
+        .main-content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Restaurant branding in sidebar */
+        .sidebar-brand {
+            text-align: center;
+            padding: 20px 15px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ffd700;
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .sidebar-brand h3 {
+            color: #ffd700;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .sidebar-brand p {
+            color: #888;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Navigation items */
+        .nav-sidebar {
+            padding: 0 15px;
+        }
+
+        .nav-sidebar .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-sidebar .nav-link {
+            padding: 12px 20px;
+            color: #ddd;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .nav-sidebar .nav-link:hover {
+            background: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+            transform: translateX(5px);
+        }
+
+        .nav-sidebar .nav-link.active {
+            background: rgba(255, 215, 0, 0.15);
+            color: #ffd700;
+            border-left: 3px solid #ffd700;
+        }
+
+        /* Dropdown in sidebar */
+        .sidebar-dropdown {
+            padding: 0 15px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-dropdown .dropdown-toggle {
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: none;
+            padding: 12px 20px;
+            color: #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .sidebar-dropdown .dropdown-toggle:hover {
+            background: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+        }
+
+        .sidebar-dropdown .dropdown-menu {
+            background: #222;
+            border: 1px solid #ffd700;
+            width: 100%;
+            position: relative !important;
+            transform: none !important;
+            margin-top: 5px;
+            padding: 10px;
+        }
+
+        .sidebar-dropdown .dropdown-item {
+            color: #ddd;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-dropdown .dropdown-item:hover {
+            background: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+        }
+
+        /* User info section */
+        .user-info {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            padding: 20px 15px;
+            border-top: 1px solid #333;
+            text-align: center;
+        }
+
+        .user-info .username {
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .user-info .logout-btn {
+            background: transparent;
+            border: 1px solid #ffd700;
+            color: #ffd700;
+            padding: 8px 20px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .user-info .logout-btn:hover {
+            background: #ffd700;
+            color: #000;
+        }
+
+        /* Custom scrollbar for sidebar */
+        .vertical-nav::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .vertical-nav::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        .vertical-nav::-webkit-scrollbar-thumb {
+            background: #ffd700;
+            border-radius: 5px;
+        }
+
+        /* Alert positioning */
+        .alerts-container {
+            margin-bottom: 20px;
+        }
+
+        /* Emoji and icon styles */
+        .nav-icon {
+            font-size: 1.2rem;
+            min-width: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Vertical Sidebar Navigation -->
+        <nav class="vertical-nav">
+            <!-- Restaurant Brand -->
+            <div class="sidebar-brand">
+                <h3>🍽️ Restaurant</h3>
+                <p>Management System</p>
+            </div>
+
+            <!-- Navigation Links based on role -->
+            <div class="nav-sidebar">
+                {% if session.get('role') == 'owner' %}
+                <div class="nav-item">
+                    <a class="nav-link" href="/owner">
+                        <span class="nav-icon">📊</span> Dashboard
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="/inventory">
+                        <span class="nav-icon">📦</span> Inventory
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="/users">
+                        <span class="nav-icon">👥</span> Users
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link text-info fw-bold" href="/ai-analysis">
+                        <span class="nav-icon">🤖</span> AI Analysis
+                    </a>
+                </div>
+                <div class="nav-item">
+                  <!-- For owner role, add this link -->
+<a class="nav-link" href="/add_transaction_page">
+    <span class="nav-icon">➕</span> Add Transaction
+</a>
+                </div>
+                <div class="nav-item">
+                  <!-- For owner/accountant role, add this link -->
+<a class="nav-link" href="/all_transactions">
+    <span class="nav-icon">📋</span> All Transactions
+</a>
+                </div>
+                {% endif %}
+
+                {% if session.get('role') == 'staff' %}
+                <div class="nav-item">
+                    <a class="nav-link" href="/staff">
+                        <span class="nav-icon">📋</span> Dashboard
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="/staff/items-today">
+                        <span class="nav-icon">📈</span> Items Sold Today
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="/staff/take-order">
+                        <span class="nav-icon">📝</span> Take Order
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="/staff/menu">
+                        <span class="nav-icon">🍕</span> Menu
+                    </a>
+                </div>
+                {% endif %}
+
+                {% if session.role == "accountant" %}
+                <div class="nav-item">
+                    <a class="nav-link" href="/accountant">
+                        <span class="nav-icon">📊</span> Dashboard
+                    </a>
+                </div>
+                
+                <!-- Snapshot Dropdown -->
+                <div class="sidebar-dropdown">
+                    <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <span class="nav-icon">📸</span> Snapshot
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#" class="dropdown-item snapshot-link text-success" data-type="sales">
+                                <strong>Today Sales</strong><br>
+                                <small>₹{{ today_sales if today_sales else '0' }}</small>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="dropdown-item snapshot-link text-danger" data-type="expenses">
+                                <strong>Today Expenses</strong><br>
+                                <small>₹{{ today_expense if today_expense else '24561.0' }}</small>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="dropdown-item snapshot-link text-info" data-type="profit">
+                                <strong>Net Profit</strong><br>
+                                <small>₹{{ (today_sales|float - today_expense|float) if today_sales and today_expense else '0' }}</small>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="nav-item">
+                  <!-- For accountant role, add this link -->
+<a class="nav-link" href="/accountant/add-product-page">
+    <span class="nav-icon">📦</span> Add Product
+</a>
+                </div>
+
+                <div class="nav-item">
+                    <a class="nav-link" href="/accountant/view-table">
+                        <span class="nav-icon">📋</span> View Table
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- User Info and Logout -->
+            <div class="user-info">
+                <div class="username">
+                    <span class="nav-icon">👤</span> {{ session.username }}
+                </div>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Alerts Container -->
+            <div class="alerts-container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Page Content -->
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal fade" id="snapshotChartModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="snapshotChartTitle"></h5>
+                    <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <canvas id="snapshotChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let snapshotChart;
+
+            document.body.addEventListener("click", function (e) {
+                const link = e.target.closest(".snapshot-link");
+                if (!link) return;
+
+                e.preventDefault();
+
+                const type = link.dataset.type;
+                const modalEl = document.getElementById("snapshotChartModal");
+                const modal = new bootstrap.Modal(modalEl);
+
+                fetch("/chart-data")
+                    .then(res => res.json())
+                    .then(data => {
+                        const ctx = document.getElementById("snapshotChart").getContext("2d");
+                        if (snapshotChart) snapshotChart.destroy();
+
+                        let chartConfig = {};
+                        let title = "";
+
+                        if (type === "sales") {
+                            title = "Today's Sales (Item-wise)";
+                            chartConfig = {
+                                type: "bar",
+                                data: {
+                                    labels: Object.keys(data.today_sales || {}),
+                                    datasets: [{
+                                        label: "Quantity Sold",
+                                        data: Object.values(data.today_sales || {}),
+                                        backgroundColor: "#22c55e"
+                                    }]
+                                }
+                            };
+                        }
+
+                        if (type === "expenses") {
+                            title = "Expense Category Distribution";
+                            chartConfig = {
+                                type: "pie",
+                                data: {
+                                    labels: Object.keys(data.expense_categories || {}),
+                                    datasets: [{
+                                        data: Object.values(data.expense_categories || {}),
+                                        backgroundColor: [
+                                            "#ef4444", "#f59e0b", "#22c55e",
+                                            "#3b82f6", "#8b5cf6"
+                                        ]
+                                    }]
+                                }
+                            };
+                        }
+
+                        if (type === "profit") {
+                            title = "Daily Profit Trend";
+                            chartConfig = {
+                                type: "line",
+                                data: {
+                                    labels: Object.keys(data.daily_profit || {}),
+                                    datasets: [{
+                                        label: "Profit",
+                                        data: Object.values(data.daily_profit || {}),
+                                        borderColor: "#38bdf8",
+                                        tension: 0.3,
+                                        fill: false
+                                    }]
+                                }
+                            };
+                        }
+
+                        document.getElementById("snapshotChartTitle").innerText = title;
+                        snapshotChart = new Chart(ctx, chartConfig);
+                        modal.show();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching chart data:', error);
+                        alert('Failed to load chart data. Please try again.');
+                    });
+            });
+
+            // Highlight active nav link based on current URL
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.nav-sidebar .nav-link').forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Flavor Fusion - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ===== LOGIN THEME - COMPLEMENTARY TO REGISTER PAGE ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Dancing+Script:wght@400;600;700&display=swap');
+
+        body {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
+                         url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=2047&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated floating food particles - similar to register page */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 15% 25%, rgba(0, 191, 255, 0.12) 3px, transparent 3px),
+                radial-gradient(circle at 85% 65%, rgba(255, 105, 180, 0.12) 4px, transparent 4px),
+                radial-gradient(circle at 45% 75%, rgba(255, 215, 0, 0.12) 2px, transparent 2px),
+                radial-gradient(circle at 75% 30%, rgba(50, 205, 50, 0.12) 3px, transparent 3px);
+            background-size: 80px 80px;
+            pointer-events: none;
+            animation: floatParticles 15s linear infinite;
+        }
+
+        @keyframes floatParticles {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(20px, 20px) rotate(5deg); }
+        }
+
+        /* Floating food icons - similar to register page but different colors */
+        .floating-food {
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.2;
+            animation: floatFood 12s ease-in-out infinite;
+            pointer-events: none;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+            z-index: 0;
+        }
+
+        .food-1 { top: 12%; left: 4%; animation-delay: 0s; transform: rotate(-5deg); color: #00BFFF; }
+        .food-2 { bottom: 18%; right: 5%; animation-delay: 2s; transform: rotate(10deg); color: #FF69B4; }
+        .food-3 { top: 32%; right: 12%; animation-delay: 4s; transform: rotate(-10deg); color: #FFD700; }
+        .food-4 { bottom: 42%; left: 10%; animation-delay: 6s; transform: rotate(15deg); color: #32CD32; }
+        .food-5 { top: 68%; left: 15%; animation-delay: 8s; transform: rotate(-15deg); color: #FF8C00; }
+        .food-6 { bottom: 22%; right: 15%; animation-delay: 10s; transform: rotate(5deg); color: #9370DB; }
+
+        @keyframes floatFood {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            33% { transform: translateY(-20px) rotate(5deg) scale(1.1); }
+            66% { transform: translateY(10px) rotate(-5deg) scale(0.95); }
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            animation: slideUp 0.8s ease-out;
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .restaurant-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .restaurant-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00BFFF, #FF69B4, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 191, 255, 0.3);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .restaurant-name::before {
+            content: '🍽️';
+            font-size: 2.5rem;
+            margin-right: 15px;
+            animation: plateSpin 2s ease-in-out infinite;
+            display: inline-block;
+            -webkit-text-fill-color: initial;
+            color: #00BFFF;
+        }
+
+        .restaurant-name::after {
+            content: '🍴';
+            font-size: 2.5rem;
+            margin-left: 15px;
+            animation: plateSpin 2s ease-in-out infinite reverse;
+            display: inline-block;
+            -webkit-text-fill-color: initial;
+            color: #FF69B4;
+        }
+
+        @keyframes plateSpin {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(10deg) scale(1.1); }
+        }
+
+        .restaurant-tagline {
+            color: #FFFFFF;
+            font-size: 1.1rem;
+            opacity: 0.95;
+            background: rgba(0, 191, 255, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 10px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .login-form {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 35px;
+            padding: 40px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Colorful gradient border effect - different colors from register */
+        .login-form::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00BFFF, #FF69B4, #FFD700, #32CD32, #9370DB);
+            border-radius: 37px;
+            opacity: 0.3;
+            animation: borderGlow 3s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .form-title {
+            color: #FFFFFF;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 2.2rem;
+            font-family: 'Montserrat', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .form-title span {
+            background: linear-gradient(135deg, #00BFFF, #FF69B4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #00BFFF, #FF69B4, #FFD700);
+            border-radius: 3px;
+            animation: titleExpand 1s ease-out;
+        }
+
+        @keyframes titleExpand {
+            from { width: 0; opacity: 0; }
+            to { width: 80px; opacity: 1; }
+        }
+
+        /* Alert styling */
+        .alert {
+            background: rgba(255, 105, 180, 0.15);
+            border: 2px solid rgba(255, 105, 180, 0.3);
+            color: #FFFFFF;
+            border-radius: 50px;
+            padding: 12px 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .alert-danger {
+            background: rgba(255, 105, 180, 0.15);
+            border-color: rgba(255, 105, 180, 0.4);
+            color: #FFE6F0;
+        }
+
+        /* Input groups with icons */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #FF69B4;
+            z-index: 2;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #FFFFFF;
+            border-radius: 50px;
+            padding: 15px 20px 15px 50px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 1rem;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        .form-control:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(0, 191, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: #00BFFF;
+            color: #FFFFFF;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
+            outline: none;
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #00BFFF, #FF69B4, #FFD700);
+            border: none;
+            color: #1A1A1A;
+            font-weight: 700;
+            padding: 18px;
+            border-radius: 50px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: 20px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0, 191, 255, 0.3);
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: translate(-50%, -50%);
+            transition: width 0.8s, height 0.8s;
+        }
+
+        .btn-login:hover::before {
+            width: 500px;
+            height: 500px;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #FFD700, #FF69B4, #00BFFF);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.5);
+            color: #000;
+        }
+
+        .btn-login i {
+            margin-right: 10px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .register-link {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+        }
+
+        .register-link a {
+            color: #FF69B4;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .register-link a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #00BFFF, #FF69B4);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .register-link a:hover::after {
+            transform: scaleX(1);
+        }
+
+        .register-link a:hover {
+            color: #00BFFF;
+        }
+
+        /* Responsive design */
+        @media (max-width: 576px) {
+            .login-container {
+                padding: 15px;
+            }
+
+            .restaurant-name {
+                font-size: 3rem;
+            }
+
+            .restaurant-name::before,
+            .restaurant-name::after {
+                font-size: 2rem;
+            }
+
+            .login-form {
+                padding: 30px 25px;
+            }
+
+            .form-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00BFFF, #FF69B4);
+            border-radius: 10px;
+            border: 2px solid rgba(0, 0, 0, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #FF69B4, #00BFFF);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Floating Food Icons - similar to register page but different colors -->
+    <div class="floating-food food-1">🍕</div>
+    <div class="floating-food food-2">🍔</div>
+    <div class="floating-food food-3">🍣</div>
+    <div class="floating-food food-4">🥗</div>
+    <div class="floating-food food-5">🍜</div>
+    <div class="floating-food food-6">🍝</div>
+
+    <div class="login-container">
+        <div class="restaurant-header">
+            <h1 class="restaurant-name">Flavor Fusion</h1>
+            <div class="restaurant-tagline">Where Every Bite Tells a Story</div>
+        </div>
+
+        <form method="post" class="login-form">
+            <h4 class="form-title">Welcome <span>Back</span></h4>
+
+            {% if error %}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>
+                {{error}}
+            </div>
+            {% endif %}
+
+            <!-- Username Input with Icon -->
+            <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input class="form-control" name="username" placeholder="Username" required>
+            </div>
+
+            <!-- Password Input with Icon -->
+            <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input class="form-control" name="password" type="password" placeholder="Password" required>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+
+            <div class="register-link">
+                Don't have an account? <a href="/register">Create Account</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Add subtle animations and effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate form elements on load
+            const formElements = document.querySelectorAll('.form-control, .btn-login');
+            formElements.forEach((element, index) => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+
+            // Add focus effects to inputs
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+
+            // Form validation
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                const username = document.querySelector('input[name="username"]').value;
+                const password = document.querySelector('input[name="password"]').value;
+                
+                if (!username || !password) {
+                    e.preventDefault();
+                    alert('⚠️ Please fill in all fields!');
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
