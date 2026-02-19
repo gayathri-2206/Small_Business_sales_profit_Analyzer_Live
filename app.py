@@ -657,7 +657,7 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(
     send_low_stock_alert,
     trigger="interval",
-    seconds=3600  # 🔥 sends every 10 seconds
+    seconds=86400  # 🔥 sends every 10 seconds
 )
 
 scheduler.start()
