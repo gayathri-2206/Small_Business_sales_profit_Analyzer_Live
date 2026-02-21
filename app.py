@@ -17,7 +17,7 @@ from openai import OpenAI
 import random
 import jwt
 from functools import wraps
-
+import threading
 
 load_dotenv()
 
@@ -80,7 +80,8 @@ app.config.update(
     MAIL_USE_SSL=os.getenv("MAIL_USE_SSL", "False") == "True",
     MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
     MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
-    MAIL_DEFAULT_SENDER=os.getenv("MAIL_DEFAULT_SENDER")
+    MAIL_DEFAULT_SENDER=os.getenv("MAIL_DEFAULT_SENDER", os.getenv("MAIL_USERNAME")),
+    MAIL_TIMEOUT=10
 )
 
 mail = Mail(app)
@@ -538,20 +539,25 @@ FlavorFusion Restaurant
 
         mail.send(msg)
 
+
+
 @app.route("/send-management-report")
 @login_required(["owner"])
 def send_management_report_route():
+    
     def send_report_background():
         try:
             generate_and_send_combined_report()
+            print("Management report sent successfully!")
         except Exception as e:
             print(f"Error sending report in background: {e}")
 
-    # Run email sending in background
+    # Start background thread
     thread = threading.Thread(target=send_report_background)
+    thread.daemon = True
     thread.start()
 
-    flash("Management report is being sent in background!", "success")
+    flash("Management report is being sent. Please check your email shortly.", "success")
     return redirect(url_for("owner_dashboard"))
 
 def generate_and_send_combined_report():
